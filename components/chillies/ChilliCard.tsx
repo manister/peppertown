@@ -1,4 +1,5 @@
 import React from 'react'
+import HighlightText from '~/components/global/HighlightText'
 import ImageWithCredit from '~/components/global/ImageWithCredit'
 import LinkTo from '~/components/global/LinkTo'
 import ChilliDetails from './ChilliDetails'
@@ -30,12 +31,9 @@ const ChilliCard = (props: IChilli): JSX.Element => {
       </div>
 
       <div className="p-4 mb-4">
-        <LinkTo
-          className="focus-visible:ring ring-offset-2  ring-blue inline-block mb-4 text-white p-2 bg-blue-700"
-          href={`/cultivars/${handle}`}
-        >
-          <h2 className="text-xl font-bold tracking-wide underline md:no-underline md:hover:underline">{name}</h2>
-        </LinkTo>
+        <HighlightText className="text-lg mb-3 bg-blue-700" href={`/cultivars/${handle}`}>
+          <h2>{name}</h2>
+        </HighlightText>
 
         {/* {wishlist.has(handle) ? (
           <button onClick={() => actions.removeFromWishlist(handle)}>remove</button>

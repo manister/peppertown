@@ -2,6 +2,7 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import ChilliDetails from '~/components/chillies/ChilliDetails'
 import ChilliListing from '~/components/chillies/ChillisListing'
+import HighlightText from '~/components/global/HighlightText'
 import ImageWithCredit from '~/components/global/ImageWithCredit'
 import Container from '~/components/layout/Container'
 
@@ -22,7 +23,9 @@ const FullChilliProfile = (props: Props): JSX.Element => {
     <>
       <Container>
         <article className="py-3 max-w-prose">
-          <h1 className="text-4xl p-3 inline-block font-bold text-white bg-green-800 mb-3">{name}</h1>
+          <HighlightText className="text-3xl mb-3 bg-blue-700">
+            <h2>{name}</h2>
+          </HighlightText>{' '}
           <br />
           <div className="my-3 inline-flex">
             <ImageWithCredit

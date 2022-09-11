@@ -7,7 +7,7 @@ import ListFilter from './ChilliFilters/ListFilter'
 // import RangeFilter from './ChilliFilters/RangeFilter'
 import Button from '../global/Button'
 
-type Props = {
+interface Props {
   open: boolean
   filters: IFilter[]
   setOpen: (value: boolean) => void
@@ -56,7 +56,7 @@ const ChilliFilters = (props: Props): JSX.Element => {
         }`}
       >
         <header className="p-4 flex justify-between border-b-2 bg-gray-700 ">
-          <h3 className="underline md:no-underline text-xl font-bold uppercase tracking-wider text-white">Filters</h3>
+          <h3 className="text-xl font-bold uppercase tracking-wider text-white">Filters</h3>
           <button disabled={!open} type="button" onClick={() => setOpen(false)} aria-label="close" className="text-xl text-white">
             ✖
           </button>

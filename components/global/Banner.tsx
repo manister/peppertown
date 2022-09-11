@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Container from '~/components/layout/Container'
 // import LinkTo from './LinkTo'
 
-type Props = {
+interface Props {
   className?: string
   backgroundImage?: {
     src: string

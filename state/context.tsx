@@ -3,7 +3,7 @@ import createActions from './actions'
 import initialState from './initialState'
 import reducer from './reducer'
 
-type Props = {
+interface Props {
   children: React.ReactNode
 }
 

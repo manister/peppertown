@@ -1,6 +1,26 @@
 import React from 'react'
 import Emoji from '~/components/global/Emoji'
-import LinkTo from '~/components/global/LinkTo'
+import HighlightText from '~/components/global/HighlightText'
+
+interface ChilliDetailSectionProps {
+  emoji: string
+  label: string
+  children: React.ReactNode
+}
+
+const ChilliDetailSection = (props: ChilliDetailSectionProps): JSX.Element => {
+  const { emoji, children, label } = props
+  return (
+    <>
+      <div className="mb-2">
+        <span className="font-bold tracking-wide">
+          <Emoji src={emoji} /> {label}{' '}
+        </span>
+        <>{children}</>
+      </div>
+    </>
+  )
+}
 
 const ChilliDetails = (props: IChilli): JSX.Element => {
   const { scoville, species, origin } = props
@@ -9,56 +29,43 @@ const ChilliDetails = (props: IChilli): JSX.Element => {
     <>
       <div className="text-slate-600">
         {scoville && (
-          <div className="mb-2">
-            <span className="font-bold tracking-wide">
-              <Emoji src="🔥" /> Heat:{' '}
-            </span>
+          <ChilliDetailSection label="Heat:" emoji="🔥">
             <span className="font-bold">
               {scoville[0]} - {scoville[1]} SHU
             </span>
-          </div>
+          </ChilliDetailSection>
         )}
         {species.length > 0 && (
           //Make into component for species list
-          <div className="mb-2">
-            <span className="font-bold tracking-wide">
-              <Emoji src="🍃" /> Species:{' '}
-            </span>
+          <ChilliDetailSection label="Species:" emoji="🍃">
             {species.map((item) => (
               <React.Fragment key={item.handle}>
-                <LinkTo
-                  className={`focus-visible:ring ring-offset-2 ring-blue underline md:no-underline md:hover:underline p-2 text-white font-bold
+                <HighlightText
+                  href={`species/${item.handle}`}
+                  className={`
                     ${item.handle === 'annuum' && 'bg-green'}
                     ${item.handle === 'chinense' && 'bg-red-300'}
                     ${item.handle === 'baccatum' && 'bg-yellow'}
-                    ${item.handle === 'frutescens' && 'bg-pink'}
-                  inline-block`}
-                  href={`/species/${item.handle}`}
+                    ${item.handle === 'frutescens' && 'bg-pink'}`}
                 >
                   {item.name}
-                </LinkTo>
+                </HighlightText>
               </React.Fragment>
             ))}
-          </div>
+          </ChilliDetailSection>
         )}
 
         {origin.length > 0 && (
           //Make into component for species list
-          <div>
-            <span className="font-bold tracking-wide mb-1">
-              <Emoji src="🌐" /> Origins:{' '}
-            </span>
+          <ChilliDetailSection emoji="🌐" label="Origins:">
             {origin.map((item) => (
               <React.Fragment key={item.handle}>
-                <LinkTo
-                  className=" focus-visible:ring ring-offset-2 ring-bluehover:underline p-2 text-white font-bold bg-gray-700 inline-block"
-                  href={`/origin/${item.handle}`}
-                >
+                <HighlightText className="bg-gray-700" href={`origin/${item.handle}`}>
                   {item.name}
-                </LinkTo>
+                </HighlightText>
               </React.Fragment>
             ))}
-          </div>
+          </ChilliDetailSection>
         )}
       </div>
     </>

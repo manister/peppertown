@@ -2,7 +2,7 @@ import React, { memo } from 'react'
 import twemoji from 'twemoji'
 import parse from 'html-react-parser'
 
-type Props = {
+interface Props {
   src: string
 }
 

@@ -3,7 +3,7 @@ import LinkTo from '~/components/global/LinkTo'
 
 import Container from '~/components/layout/Container'
 
-type Props = {
+interface Props {
   className?: string
 }
 

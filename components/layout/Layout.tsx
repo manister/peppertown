@@ -3,7 +3,7 @@ import LinkTo from '~/components/global/LinkTo'
 import Footer from '~/components/page/Footer'
 import Nav from '~/components/page/Nav'
 import ClientOnly from '~/components/utility/ClientOnly'
-type Props = {
+interface Props {
   children: React.ReactNode
   showCookieConsent?: boolean // default true
 }

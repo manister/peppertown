@@ -4,7 +4,7 @@ import LinkTo from './LinkTo'
 import { useState } from 'react'
 import ClientOnly from '~/components/utility/ClientOnly'
 
-type Props = {
+interface Props {
   src: string
   alt: string
   width: number
@@ -51,18 +51,15 @@ const ImageWithCredit = (props: Props): JSX.Element => {
               <>
                 {parse(credit)}{' '}
                 <button
-                  className="p-1 hover:underline bg-green-600 uppercase tracking-wider font-bold"
+                  className="p-1 underline md:no-underline md:hover:underline  bg-green-600 font-bold"
                   onClick={() => setShowCaption(false)}
                 >
                   Hide
                 </button>
               </>
             ) : (
-              <button
-                className="uppercase underline md:no-underline md:hover:underline tracking-wider font-bold"
-                onClick={() => setShowCaption(true)}
-              >
-                Show Attribution
+              <button className="underline md:no-underline md:hover:underline font-bold" onClick={() => setShowCaption(true)}>
+                Attribution
               </button>
             )}
           </div>

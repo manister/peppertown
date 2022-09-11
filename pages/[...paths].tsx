@@ -79,7 +79,7 @@ const ChilliPage = ({ chillies, requestType, filters, pageContent, relatedChilli
               {pageContent.content}
             </ReactMarkdown>
           ) : (
-            <h1 className="text-center">{pageContent.title}</h1>
+            <h1>{pageContent.title}</h1>
           )}
         </Banner>
 

@@ -1,3 +1,5 @@
-# next-starter template
+# Pepper town
 
-next starter setup with typescript & tailwindcss
+A directory on chilli pepper cultivars, always a work in progress. 
+
+Airtable as a backend with a next.js website

@@ -7,7 +7,7 @@ import ChilliFilters from './ChilliFilters'
 import { ItemList, WithContext } from 'schema-dts'
 import Container from '~/components/layout/Container'
 
-type Props = {
+interface Props {
   chillies: IChilli[]
   filters?: IFilter[]
 }
@@ -56,7 +56,11 @@ const ChilliListing = (props: Props): JSX.Element => {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       {filters && (
         <div className="flex justify-between my-3 px-2 items-center">
-          <button className="p-2 font-bold bg-yellow" type="button" onClick={() => setFiltersOpen(!filtersOpen)}>
+          <button
+            className="p-2 font-bold bg-yellow underline md:no-underline md:hover:underline"
+            type="button"
+            onClick={() => setFiltersOpen(!filtersOpen)}
+          >
             <span className="bg-white">
               <Emoji src="⚙️" />
             </span>{' '}

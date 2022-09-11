@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
 
-type Props = {
+interface Props {
   children: React.ReactNode
 }
 
