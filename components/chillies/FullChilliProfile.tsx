@@ -1,0 +1,55 @@
+import React from 'react'
+import ReactMarkdown from 'react-markdown'
+import ChilliDetails from '~/components/chillies/ChilliDetails'
+import ChilliListing from '~/components/chillies/ChillisListing'
+import ImageWithCredit from '~/components/global/ImageWithCredit'
+import Container from '~/components/layout/Container'
+
+interface Props {
+  chilli: IChilli
+  relatedChillies: IChilli[]
+}
+
+const FullChilliProfile = (props: Props): JSX.Element => {
+  const { images, name, desc } = props.chilli
+  const { relatedChillies } = props
+  const defaultImage = images[0]
+  const alt = defaultImage?.alt ?? 'No image available'
+
+  const src = defaultImage?.cloudinaryUrl ? defaultImage.cloudinaryUrl : '/placeholder-pepper.jpg'
+
+  return (
+    <>
+      <Container>
+        <article className="py-3 max-w-prose">
+          <h1 className="text-4xl p-3 inline-block font-bold text-white bg-green-800 mb-3">{name}</h1>
+          <br />
+          <div className="my-3 inline-flex">
+            <ImageWithCredit
+              credit={defaultImage?.attr}
+              width={defaultImage?.width ?? 600}
+              height={defaultImage?.height ?? 600}
+              alt={alt}
+              src={src}
+            />
+          </div>
+          <div className="my-3">
+            <ChilliDetails {...props.chilli} />
+          </div>
+          <div className="prose my-3">
+            <ReactMarkdown>{desc}</ReactMarkdown>
+          </div>
+        </article>
+      </Container>
+      {relatedChillies.length > 0 && (
+        <section className="py-6 bg-gray-300">
+          <Container>
+            <h2 className="text-3xl p-3 inline-block font-bold text-white bg-green-800 mb-6">Keep Exploring</h2>
+          </Container>
+          <ChilliListing chillies={relatedChillies} />
+        </section>
+      )}
+    </>
+  )
+}
+export default FullChilliProfile

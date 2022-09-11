@@ -1,0 +1,7 @@
+[functions]
+  node_bundler = "esbuild"
+  included_files = ["content/**/*.md"]
+[[plugins]]
+  package = "@netlify/plugin-a11y"
+  [plugins.inputs]
+  failWithIssues = false
