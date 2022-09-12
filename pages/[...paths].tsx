@@ -11,7 +11,7 @@ import Layout from '~/components/layout/Layout'
 import LinkTo from '~/components/global/LinkTo'
 
 import { getBasicDataFromAirtable, getChilliesFromAirtable } from '~/lib/airtable'
-import { getChilliPageDataFromPaths } from '~/lib/page-data/[...paths]'
+import { getChilliPageDataFromPaths } from '~/lib/pageData/[...paths]'
 
 import ReactMarkdown from 'react-markdown'
 import Breadcrumbs from '~/components/global/Breadcrumbs'

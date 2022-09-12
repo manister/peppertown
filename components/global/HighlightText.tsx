@@ -3,7 +3,7 @@ import LinkTo from '~/components/global/LinkTo'
 interface Props {
   className?: string
   href?: string
-  children: React.ReactNode //👈 children prop typr
+  children: React.ReactNode
 }
 
 const HighlightText = (props: Props): JSX.Element => {

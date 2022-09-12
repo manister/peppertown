@@ -19,20 +19,7 @@ const ImageWithCredit = (props: Props): JSX.Element => {
   const { src, alt, credit, className, width, height, href } = props
   const ImageComponent = (): JSX.Element => (
     <>
-      {/* {src ? (
-        <Image
-          height={100}
-          width={100}
-          alt={alt}
-          className="-z-1 absolute top-0 left-0 right-0 bottom-0 blur-xl brightness-75 scale-150"
-          objectFit="cover"
-          layout="fill"
-          src={src}
-        />
-      ) : (
-        <></>
-      )} */}
-      <Image {...(className ? { className } : {})} width={width} height={height} alt={alt} objectFit="contain" src={src ?? ''} />
+      <Image {...(className ? { className } : {})} width={width} height={height} alt={alt} objectFit="cover" src={src ?? ''} />
     </>
   )
   return (

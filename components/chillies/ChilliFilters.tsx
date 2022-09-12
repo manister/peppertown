@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react'
 import { filterArrayToPathArray, updateListFilter } from '~/lib/filters'
 import { useDebounce } from 'use-debounce'
 import ListFilter from './ChilliFilters/ListFilter'
-// import RangeFilter from './ChilliFilters/RangeFilter'
 import Button from '../global/Button'
 
 interface Props {
@@ -66,57 +65,56 @@ const ChilliFilters = (props: Props): JSX.Element => {
           onSubmit={(e) => {
             e.preventDefault()
             const filterPath = filterArrayToPathArray(currentFilters).flat().join('/')
-
             router.push(filterPath ? filterPath : '/cutlivars')
+            setOpen(false)
           }}
         >
-          <fieldset disabled={!open}>
-            <ul>
-              {currentFilters.map((filter, index) => {
-                if (filter.type === 'list') {
-                  return (
-                    <li key={filter.name} className="border-b-2 border-slate-200">
-                      <ListFilter
-                        filter={filter}
-                        onChange={(optionIndex, value) => {
-                          const newFilters = updateListFilter(currentFilters, index, optionIndex, value)
-                          setCurrentFilters(newFilters)
-                        }}
-                      />
-                    </li>
-                  )
-                }
-                if (filter.type === 'range') {
-                  return null
-                  //TODO: range filter final work
-                  // return (
-                  //   <li key={filter.name} className="border-b-2 border-slate-200">
-                  //     <RangeFilter
-                  //       key={filter.name}
-                  //       filter={filter}
-                  //       sliderChange={(val) => {
-                  //         const newFilters = updateRangeFilter(currentFilters, index, val as [number, number])
-                  //         setCurrentFilters(newFilters)
-                  //       }}
-                  //       minChange={(val) => {
-                  //         const newFilters = updateRangeFilter(currentFilters, index, [val, null])
-                  //         setCurrentFilters(newFilters)
-                  //       }}
-                  //       maxChange={(val) => {
-                  //         const newFilters = updateRangeFilter(currentFilters, index, [null, val])
-                  //         setCurrentFilters(newFilters)
-                  //       }}
-                  //     />
-                  //   </li>
-                  // )
-                }
+          <ul>
+            {currentFilters.map((filter, index) => {
+              if (filter.type === 'list') {
+                return (
+                  <li key={filter.name} className="border-b-2 border-slate-200">
+                    <ListFilter
+                      filter={filter}
+                      onChange={(optionIndex, value) => {
+                        const newFilters = updateListFilter(currentFilters, index, optionIndex, value)
+                        setCurrentFilters(newFilters)
+                      }}
+                    />
+                  </li>
+                )
+              }
+              if (filter.type === 'range') {
                 return null
-              })}
-            </ul>
-          </fieldset>
+                //TODO: range filter final work
+                // return (
+                //   <li key={filter.name} className="border-b-2 border-slate-200">
+                //     <RangeFilter
+                //       key={filter.name}
+                //       filter={filter}
+                //       sliderChange={(val) => {
+                //         const newFilters = updateRangeFilter(currentFilters, index, val as [number, number])
+                //         setCurrentFilters(newFilters)
+                //       }}
+                //       minChange={(val) => {
+                //         const newFilters = updateRangeFilter(currentFilters, index, [val, null])
+                //         setCurrentFilters(newFilters)
+                //       }}
+                //       maxChange={(val) => {
+                //         const newFilters = updateRangeFilter(currentFilters, index, [null, val])
+                //         setCurrentFilters(newFilters)
+                //       }}
+                //     />
+                //   </li>
+                // )
+              }
+              return null
+            })}
+          </ul>
+
           <div className="sticky bottom-0 w-1/1  bg-white p-3 mt-auto">
             <Button variant="primary">
-              <button disabled={!open || count === 0} onClick={() => setOpen(false)} className="w-1/1" type="submit">
+              <button disabled={!open || count === 0} className="w-1/1" type="submit">
                 Apply {count !== null ? `(${count})` : ''}
               </button>
             </Button>

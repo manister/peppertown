@@ -6,6 +6,9 @@ import ChilliFilters from './ChilliFilters'
 
 import { ItemList, WithContext } from 'schema-dts'
 import Container from '~/components/layout/Container'
+import { schemaMarkupFromListOfChillies } from '~/lib/schemaMarkup'
+import HighlightText from '~/components/global/HighlightText'
+import SchemaMarkup from '~/components/global/SchemaMarkup'
 
 interface Props {
   chillies: IChilli[]
@@ -19,41 +22,11 @@ const ChilliListing = (props: Props): JSX.Element => {
 
   const { asPath } = useRouter()
 
-  const structuredData: WithContext<ItemList> = {
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    url: `https://pepper.town${asPath}`,
-    numberOfItems: chillies.length,
-    name: 'List of chilli peppers',
-    alternateName: ['List of chili peppers', 'List of hot peppers', 'List of chillies'],
-    itemListElement: chillies.map((chilli) => {
-      return {
-        '@context': 'https://schema.org',
-        '@type': 'Taxon',
-        taxonRank: 'Cultivar',
-        name: chilli.name,
-        parentTaxon: {
-          '@context': 'https://schema.org',
-          '@type': 'Taxon',
-          taxonRank: 'Species',
-          name: `Capsicum ${chilli.species[0]?.name}`,
-          sameAs: [`https://species.wikimedia.org/wiki/Capsicum_${chilli.species[0]?.handle}`],
-          parentTaxon: {
-            '@context': 'https://schema.org',
-            '@type': 'Taxon',
-            taxonRank: 'Genus',
-            sameAs: ['https://species.wikimedia.org/wiki/Capsicum', 'https://www.wikidata.org/wiki/Q165199'],
-            name: 'Capsicum',
-            alternateName: ['Chilli', 'Chili', 'Chilli Pepper', 'Chili Pepper', 'Hot Pepper'],
-          },
-        },
-      }
-    }),
-  }
+  const structuredData = schemaMarkupFromListOfChillies(chillies, asPath)
 
   return (
     <Container>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <SchemaMarkup data={structuredData} />
       {filters && (
         <div className="flex justify-between my-3 px-2 items-center">
           <button
@@ -66,7 +39,7 @@ const ChilliListing = (props: Props): JSX.Element => {
             </span>{' '}
             Filters
           </button>
-          <p className="my-3 italic text-white p-2 font-bold bg-green-700">{chillies.length} Peppers Found</p>
+          <HighlightText className="my-3 bg-green-700">{chillies.length} Peppers Found</HighlightText>
         </div>
       )}
 

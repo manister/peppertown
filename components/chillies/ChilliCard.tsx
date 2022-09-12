@@ -1,7 +1,6 @@
 import React from 'react'
 import HighlightText from '~/components/global/HighlightText'
 import ImageWithCredit from '~/components/global/ImageWithCredit'
-import LinkTo from '~/components/global/LinkTo'
 import ChilliDetails from './ChilliDetails'
 
 // import { useGlobalState } from '~/state/context'
@@ -10,9 +9,6 @@ const ChilliCard = (props: IChilli): JSX.Element => {
   const { images, name, handle } = props
   const defaultImage = images[0]
   const alt = defaultImage?.alt ?? 'No image available'
-
-  // const { state, actions } = useGlobalState()
-  // const { wishlist } = state
 
   const src = defaultImage?.cloudinaryUrl ? defaultImage.cloudinaryUrl : '/placeholder-pepper.jpg'
 
@@ -24,7 +20,7 @@ const ChilliCard = (props: IChilli): JSX.Element => {
           credit={defaultImage?.attr}
           className="block focus-visible:outline hover:outline outline-[3px]"
           width={600}
-          height={400}
+          height={500}
           alt={alt}
           src={src}
         />
@@ -34,12 +30,6 @@ const ChilliCard = (props: IChilli): JSX.Element => {
         <HighlightText className="text-lg mb-3 bg-blue-700" href={`/cultivars/${handle}`}>
           <h2>{name}</h2>
         </HighlightText>
-
-        {/* {wishlist.has(handle) ? (
-          <button onClick={() => actions.removeFromWishlist(handle)}>remove</button>
-        ) : (
-          <button onClick={() => actions.addToWishlist(handle)}>add</button>
-        )} */}
 
         <ChilliDetails {...props} />
       </div>

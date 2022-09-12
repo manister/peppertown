@@ -1,5 +1,6 @@
-import { BreadcrumbList, WithContext } from 'schema-dts'
+import SchemaMarkup from '~/components/global/SchemaMarkup'
 import Container from '~/components/layout/Container'
+import { schemaMarkupBreadcrumbsFromLinks } from '~/lib/schemaMarkup'
 import LinkTo from './LinkTo'
 
 interface Props {
@@ -8,20 +9,10 @@ interface Props {
 
 const Breadcrumbs = (props: Props): JSX.Element => {
   const { links } = props
-  const structuredData: WithContext<BreadcrumbList> = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: links.map((item, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: item.title,
-      item: `https://pepper.town${item.link}`,
-    })),
-  }
-
+  const structuredData = schemaMarkupBreadcrumbsFromLinks(links)
   return (
     <Container>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <SchemaMarkup data={structuredData} />
 
       <nav aria-label="Breadcrumb">
         <ol className="inline-flex items-center py-2 mt-4">

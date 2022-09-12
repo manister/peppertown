@@ -4,7 +4,9 @@ import ChilliDetails from '~/components/chillies/ChilliDetails'
 import ChilliListing from '~/components/chillies/ChillisListing'
 import HighlightText from '~/components/global/HighlightText'
 import ImageWithCredit from '~/components/global/ImageWithCredit'
+import SchemaMarkup from '~/components/global/SchemaMarkup'
 import Container from '~/components/layout/Container'
+import { schemaMarkupFromChilli } from '~/lib/schemaMarkup'
 
 interface Props {
   chilli: IChilli
@@ -19,8 +21,10 @@ const FullChilliProfile = (props: Props): JSX.Element => {
 
   const src = defaultImage?.cloudinaryUrl ? defaultImage.cloudinaryUrl : '/placeholder-pepper.jpg'
 
+  const structuredData = schemaMarkupFromChilli(props.chilli)
   return (
     <>
+      <SchemaMarkup data={structuredData} />
       <Container>
         <article className="py-3 max-w-prose">
           <HighlightText className="text-3xl mb-3 bg-blue-700">
