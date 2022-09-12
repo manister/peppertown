@@ -60,8 +60,8 @@ const shapeChilliData = (el: any): IChilli => {
         const cloudinaryPublicId = `${raw['image/handle'][index]}-${raw['image/data'][index].id}`
         const cloudinaryUrl = `${cloudinaryPublicId}.${ext}`
         return {
-          alt: raw['image/alt'][index],
-          attr: raw['image/attr'][index],
+          alt: raw['image/alt']?.[index] ?? '',
+          attr: raw['image/attr']?.[index] ?? '',
           ...raw['image/data'][index],
           cloudinaryUrl,
         }
@@ -81,8 +81,8 @@ const shapeChilliData = (el: any): IChilli => {
               const cloudinaryPublicId = `${raw['image/handle'][index]}-${raw['image/data'][index].id}`
               const cloudinaryUrl = `${cloudinaryPublicId}.${ext}`
               return {
-                alt: raw['origin/image/alt'][i],
-                attr: raw['origin/image/attribution'][i],
+                alt: raw['origin/image/alt']?.[i] ?? '',
+                attr: raw['origin/image/attribution']?.[i] ?? '',
                 ...raw['origin/image/data'][i],
                 cloudinaryUrl,
               }
@@ -118,8 +118,8 @@ const shapeOriginData = (el: any): IOrigin => {
         const cloudinaryPublicId = `${raw['image/handle'][i]}-${raw['image/data'][i].id}`
         const cloudinaryUrl = `${cloudinaryPublicId}.${ext}`
         return {
-          alt: raw['image/alt'][i],
-          attr: raw['image/attribution'][i],
+          alt: raw['image/alt']?.[i] ?? '',
+          attr: raw['image/attribution']?.[i] ?? '',
           ...raw['image/data'][i],
           cloudinaryUrl,
         }

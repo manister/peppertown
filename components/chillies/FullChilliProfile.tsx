@@ -24,30 +24,32 @@ const FullChilliProfile = (props: Props): JSX.Element => {
   const structuredData = schemaMarkupFromChilli(props.chilli)
   return (
     <>
-      <SchemaMarkup data={structuredData} />
-      <Container>
-        <article className="py-3 max-w-prose">
-          <HighlightText className="text-3xl mb-3 bg-blue-700">
-            <h2>{name}</h2>
-          </HighlightText>{' '}
-          <br />
-          <div className="my-3 inline-flex">
-            <ImageWithCredit
-              credit={defaultImage?.attr}
-              width={defaultImage?.width ?? 600}
-              height={defaultImage?.height ?? 600}
-              alt={alt}
-              src={src}
-            />
-          </div>
-          <div className="my-3">
-            <ChilliDetails {...props.chilli} />
-          </div>
-          <div className="prose my-3">
-            <ReactMarkdown>{desc}</ReactMarkdown>
-          </div>
-        </article>
-      </Container>
+      <section>
+        <SchemaMarkup data={structuredData} />
+        <Container>
+          <article className="py-6 max-w-prose">
+            <HighlightText className="text-3xl mb-3 bg-blue-700">
+              <h2>{name}</h2>
+            </HighlightText>{' '}
+            <br />
+            <div className="my-3 inline-flex border border-gray-300 text-[0px]">
+              <ImageWithCredit
+                credit={defaultImage?.attr}
+                width={defaultImage?.width ?? 600}
+                height={defaultImage?.height ?? 600}
+                alt={alt}
+                src={src}
+              />
+            </div>
+            <div className="my-3">
+              <ChilliDetails {...props.chilli} />
+            </div>
+            <div className="prose my-3">
+              <ReactMarkdown>{desc}</ReactMarkdown>
+            </div>
+          </article>
+        </Container>
+      </section>
       {relatedChillies.length > 0 && (
         <section className="py-6 bg-gray-300">
           <Container>
