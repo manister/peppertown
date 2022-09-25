@@ -49,3 +49,6 @@ Airtable API has a rate limit of 5 requests per second. Even with ISR with no re
 ## Going forward
 
 See [Issues](https://github.com/manister/peppertown/labels/tasks).
+
+
+© copyright pepper.town, unless otherwise noted, 2022
