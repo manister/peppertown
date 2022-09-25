@@ -14,13 +14,13 @@ The site is hosted on Netlify and uses Netlify's built in support of [Incrementa
 
 ### Incremental Static Regeneration (ISR)
 
-Different cultivars of chilli pepper can be browsed by origin (at `origin/[origin_handle]/`), by species (at `species/[species_handle]/`) as *listing pages*, or the individual cultivar viewed (at `cultivars/[cultivar_handle]/`) as a *profile page*. These routes are generated at build time. See `getStaticPaths` at [[...paths.tsx]](https://github.com/manister/peppertown/blob/main/pages/%5B...paths%5D.tsx). Once generated, these paths are not revalidated, so only rebuilt when another build is kicked off - eg if edits are made to the data in Airtable.
+Different cultivars of chilli pepper can be browsed by origin (at `origin/[origin_handle]/`), by species (at `species/[species_handle]/`) as **listing pages**, or the individual cultivar viewed (at `cultivars/[cultivar_handle]/`) as a **profile page**. These routes are generated at build time. See `getStaticPaths` at [[...paths.tsx]](https://github.com/manister/peppertown/blob/main/pages/%5B...paths%5D.tsx). Once generated, these paths are not revalidated, so only rebuilt when another build is kicked off - eg if edits are made to the data in Airtable.
 
 #### Filtering Routes
 
 Cultivars of chillies can be filtered by both origin and by species. The structure for such filtering is set by the request path in the format `/origin/[origin_handle_1]+[origin_handle_2]...+[origin_handle_n]/species/[species_handle_1]+[species_handle_2]...[species_handle_n]/`. For example `/origin/mexico+trinidad/species/annuum/` would show cultivars of species Annuum, where the origin is either Trinidad or Mexico. More filtering and sorting is handled, but currently lacks a front end implemenation. See [filters.ts](https://github.com/manister/peppertown/blob/main/lib/filters.ts).
 
-These filtered routes are generated at request time using *ISR*, and then never revalidated. This limits requests to the Airtable API and keeps response times fast.
+These filtered routes are generated at request time using **ISR**, and then never revalidated. This limits requests to the Airtable API and keeps response times fast.
 
 ### Markdown content
 
