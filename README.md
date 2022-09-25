@@ -36,7 +36,7 @@ At build time, images uploaded to airtable are uploaded to Cloudinary. See [asse
 
 ## CSS
 
-Tailwind is used to style the components, meaning no stylesheet has to be mentained and instead forcing styling into the components themselves meaning that they are kept reusable and consisent without the extra overhead of maintaning stylesheet.
+Tailwind is used to style the components, meaning no stylesheet has to be mentained and instead forcing styling into the components themselves meaning that they are kept reusable and consistent without the extra overhead of maintaning stylesheets.
 
 ## Limitations
 
