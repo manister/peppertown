@@ -1,6 +1,6 @@
 # Pepper town
 
-A directory of chilli pepper cultivars. It aims to be a encyclopedia of as many different varities of chilli peppers, where the user can browse by species, geographical origin and heat (Scoville Rating). It is a work in progress.
+A directory of chilli pepper cultivars. It aims to be a encyclopedia of many different varities of chilli peppers, where the user can browse by species, geographical origin and heat (Scoville Rating). It is a work in progress.
 
 [pepper.town](https://pepper.town)
 
