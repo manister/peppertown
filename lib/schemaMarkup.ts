@@ -1,6 +1,6 @@
 import { BreadcrumbList, ItemList, Taxon, WithContext } from 'schema-dts'
 
-export const schemaMarkupFromChilli = (chilli: IChilli): WithContext<Taxon> => {
+export const schemaMarkupFromChilli = (chilli: ICultivar): WithContext<Taxon> => {
   return {
     '@context': 'https://schema.org',
     '@type': 'Taxon',
@@ -9,8 +9,8 @@ export const schemaMarkupFromChilli = (chilli: IChilli): WithContext<Taxon> => {
     parentTaxon: {
       '@type': 'Taxon',
       taxonRank: 'Species',
-      name: `Capsicum ${chilli.species[0]?.name}`,
-      sameAs: [`https://species.wikimedia.org/wiki/Capsicum_${chilli.species[0]?.handle}`],
+      name: `Capsicum ${chilli.species?.name}`,
+      sameAs: [`https://species.wikimedia.org/wiki/Capsicum_${chilli.species?.handle}`],
       parentTaxon: {
         '@type': 'Taxon',
         taxonRank: 'Genus',
@@ -22,7 +22,7 @@ export const schemaMarkupFromChilli = (chilli: IChilli): WithContext<Taxon> => {
   }
 }
 
-export const schemaMarkupFromListOfChillies = (chillies: IChilli[], path: string): WithContext<ItemList> => {
+export const schemaMarkupFromListOfChillies = (chillies: ICultivar[], path: string): WithContext<ItemList> => {
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemList',

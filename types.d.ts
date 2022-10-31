@@ -1,20 +1,24 @@
-interface IChilli {
+interface ICultivar {
   name: string
   handle: string
   desc: string
-  scoville: [number, number] | null
-  sowRange: [string, string] | null
+  scovilleMax: number
+  scovilleMin: number
+  sowmin: Date | null
+  sowmax: Date | null
   ttm: number
-  colours: IColour[]
-  species: ISpecies[]
-  images: IImage[]
-  origin: IOrigin[]
+  colour: IColour | null
+  species: ISpecies | null
+  image: IImage | null
+  origin: IOrigin | null
 }
 
 interface IColour {
   name: string
   handle: string
-  rgb: [number, number, number]
+  r: number
+  g: number
+  b: number
 }
 
 interface ISpecies {
@@ -23,27 +27,22 @@ interface ISpecies {
 }
 
 interface IImage {
-  cloudinaryUrl: string
+  name: string
+  handle: string
   alt: string
-  attr: string
-  id: string
-  width: number
-  height: number
-  url: string
-  filename: string
-  size: number
-  type: string
+  attribution: string
+  src: string
 }
 
 interface IOrigin {
   name: string
   handle: string
-  images: IImage[]
 }
 
 interface IState {
   wishlist: Set<string>
 }
+
 interface IFilterBaseValue {
   value: string
   displayValue: string
@@ -96,19 +95,35 @@ type IFilterSchemaList = IFilterSchemaColourList | IFilterSchemaTextList
 
 type IFilterList = IFilterColourList | IFilterTextList
 
-interface IFilterSchemaRange {
+interface IFilterSchemaSimpleRange {
   type: 'range'
-  subType: 'range' | 'rangerange' // rangerange is when values themselves are ranges, eg a 1000-1500 scoville
   name: string
   displayName: string
   domain: [min: number, max: number] // total range of possible values
 }
 
-interface IFilterRange extends IFilterSchemaRange {
+interface IFilterSchemaDoubleRange {
+  // double is when values themselves are ranges, eg a 1000-1500 scoville
+  type: 'doublerange'
+  name: string
+  nameMin: string
+  nameMax: string
+  displayName: string
+  domain: [min: number, max: number] // total range of possible values
+}
+
+type IFilterSchemaRange = IFilterSchemaDoubleRange | IFilterSchemaSimpleRange
+
+interface IFilterSimpleRange extends IFilterSchemaSimpleRange {
   active: [min: number, max: number]
 }
-type IFilterSchema = IFilterSchemaList | IFilterSchemaRange
-type IFilter = IFilterList | IFilterRange
+
+interface IFilterDoubleRange extends IFilterSchemaDoubleRange {
+  active: [min: number, max: number]
+}
+
+type IFilterSchema = IFilterSchemaList | IFilterSchemaDoubleRange | IFilterSchemaSimpleRange
+type IFilter = IFilterList | IFilterSimpleRange | IFilterDoubleRange
 
 interface IActionAddToWishlist {
   type: 'ADD'
@@ -133,9 +148,9 @@ interface IAppContext {
 
 //page data
 
-type IChilliPageData = {
-  chillies: IChilli[]
-  relatedChillies: IChilli[]
+type ICultivarPageData = {
+  chillies: ICultivar[]
+  relatedChillies: ICultivar[]
   requestType: 'listing' | 'handle' | null
   filters: IFilter[] | null
   pageContent: {

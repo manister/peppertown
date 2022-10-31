@@ -12,7 +12,7 @@ import Container from '~/components/layout/Container'
 import Banner from '~/components/global/Banner'
 
 interface Props {
-  chillies: IChilli[]
+  chillies: ICultivar[]
 }
 
 export const getStaticProps: GetStaticProps = async () => {

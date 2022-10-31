@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client'
 import { getBasicDataFromAirtable } from './airtable'
 import { arrShallowEq } from './dataHelpers'
 
@@ -37,9 +38,9 @@ export const getFilterSchema = async (): Promise<IFilterSchema[]> => {
     //   values: airtableDataToTextFilter(colours),
     // },
     {
-      type: 'range',
-      subType: 'rangerange',
-      name: 'scoville',
+      type: 'doublerange',
+      nameMax: 'scovilleMax',
+      nameMin: 'scovilleMin',
       displayName: 'Scoville',
       domain: [0, 2200000],
     },
@@ -77,7 +78,7 @@ export const filterArrayToPathArray = (filterArray: IFilter[]): [string, string]
   return filterArray.flatMap((filter) => {
     const handle = filter.name
     const valueString =
-      filter.type === 'range'
+      filter.type === 'range' || filter.type === 'doublerange'
         ? arrShallowEq(filter.active, filter.domain)
           ? ''
           : filter.active.join(':')
@@ -93,7 +94,7 @@ export const pathArrayToFilterArray = (pathArray: [string, string][], filterSche
       //does every item
       const group = filterSchema.find(({ name }) => name === item[0])
       if (!group) return false
-      if (group.type === 'range') return true
+      if (group.type === 'range' || group.type === 'doublerange') return true
 
       const valueMatches = group.values.some((value) => {
         const values = item[1].split('+')
@@ -109,7 +110,7 @@ export const pathArrayToFilterArray = (pathArray: [string, string][], filterSche
   const filters = filterSchema.map((filter) => {
     const match = pathArray.find((item) => item[0] === filter.name)
 
-    if (filter.type === 'range') {
+    if (filter.type === 'range' || filter.type === 'doublerange') {
       let active = filter.domain
       if (match) {
         const valueString = match[1]
@@ -122,7 +123,7 @@ export const pathArrayToFilterArray = (pathArray: [string, string][], filterSche
         ...filter,
         active,
         selected: active,
-      } as IFilterRange
+      }
     } else {
       const valueStrings = match && match.length === 2 ? match[1].split('+') : []
       const values = match
@@ -145,34 +146,34 @@ export const pathArrayToFilterArray = (pathArray: [string, string][], filterSche
   return filters
 }
 
-export const filterArrayToAirtableFilter = (filterArray: IFilter[]): string => {
-  const airtableArray = filterArray.flatMap((filter) => {
-    if (filter.type === 'range') {
-      const [min, max] = filter.active
-      if (arrShallowEq(filter.domain, filter.active)) return [] //Unselected
-      if ((min && isNaN(min)) || (max && isNaN(max))) {
-        throw new Error('Range for range values filter must be 2 numbers, seperated by a double-colon.')
-      }
-      if (filter.subType === 'range') {
-        return `AND(${filter.name} >= ${min}, ${filter.name} <= ${max})`
-      }
-      if (filter.subType === 'rangerange') {
-        return `AND(${filter.name}_max >= ${min}, ${filter.name}_min <= ${max})`
-      }
-      return []
-    }
-    if (filter.type === 'list') {
-      const activeValues = filter.values.filter((value) => value.active)
-      if (activeValues.length < 1) return [] // unselected
-      return `OR(${activeValues.reduce((acc, filterValue, i) => {
-        //build up an OR filter
-        return `${acc}FIND("${filterValue.value}", {${filter.name}/handle})${i + 1 === activeValues.length ? '' : ', '}`
-      }, '')})`
-    }
-  })
-  const ret = `AND(${airtableArray.join(', ')})`
-  return ret
-}
+// export const filterArrayToAirtableFilter = (filterArray: IFilter[]): string => {
+//   const airtableArray = filterArray.flatMap((filter) => {
+//     if (filter.type === 'range') {
+//       const [min, max] = filter.active
+//       if (arrShallowEq(filter.domain, filter.active)) return [] //Unselected
+//       if ((min && isNaN(min)) || (max && isNaN(max))) {
+//         throw new Error('Range for range values filter must be 2 numbers, seperated by a double-colon.')
+//       }
+//       if (filter.subType === 'range') {
+//         return `AND(${filter.name} >= ${min}, ${filter.name} <= ${max})`
+//       }
+//       if (filter.subType === 'rangerange') {
+//         return `AND(${filter.name}_max >= ${min}, ${filter.name}_min <= ${max})`
+//       }
+//       return []
+//     }
+//     if (filter.type === 'list') {
+//       const activeValues = filter.values.filter((value) => value.active)
+//       if (activeValues.length < 1) return [] // unselected
+//       return `OR(${activeValues.reduce((acc, filterValue, i) => {
+//         //build up an OR filter
+//         return `${acc}FIND("${filterValue.value}", {${filter.name}/handle})${i + 1 === activeValues.length ? '' : ', '}`
+//       }, '')})`
+//     }
+//   })
+//   const ret = `AND(${airtableArray.join(', ')})`
+//   return ret
+// }
 
 export const updateRangeFilter = (filters: IFilter[], filterIndex: number, val: [number | null, number | null]): IFilter[] => {
   const newFilters = [...filters]
@@ -212,4 +213,58 @@ export const updateListFilter = (filters: IFilter[], filterIndex: number, option
     option.active = value
   }
   return newFilters
+}
+
+export const filterArrayToPrismaWhere = (filterArray: IFilter[]): Prisma.cultivarWhereInput => {
+  const ret: Prisma.cultivarWhereInput = {}
+  const andArray = []
+
+  for (const filter of filterArray) {
+    if (filter.type === 'range') {
+      const [min, max] = filter.active
+      if ((min && isNaN(min)) || (max && isNaN(max))) {
+        throw new Error('Range for range values filter must be 2 numbers, seperated by a colon.')
+      }
+      andArray.push({
+        AND: [
+          {
+            [filter.name]: {
+              gte: min,
+            },
+            [filter.name]: {
+              lte: max,
+            },
+          },
+        ],
+      })
+    } else if (filter.type === 'doublerange') {
+      const [min, max] = filter.active
+      if ((min && isNaN(min)) || (max && isNaN(max))) {
+        throw new Error('Range for range values filter must be 2 numbers, seperated by a colon.')
+      }
+      andArray.push({
+        AND: [
+          {
+            [filter.nameMax]: {
+              gte: min,
+            },
+            [filter.nameMin]: {
+              lte: max,
+            },
+          },
+        ],
+      })
+    } else if (filter.type === 'list') {
+      const activeValues = filter.values.filter((value) => value.active)
+      andArray.push({
+        OR: activeValues.map((value) => {
+          return {
+            [filter.name]: value,
+          }
+        }),
+      })
+    }
+  }
+  ret.AND = andArray
+  return ret
 }

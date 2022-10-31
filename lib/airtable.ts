@@ -19,7 +19,7 @@ const endpoints: IEndPoints | null = process.env.AIRTABLE_ENDPOINT
   : null
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const shapeChilliData = (el: any): IChilli => {
+const shapeChilliData = (el: any): ICultivar => {
   const raw = el.fields
   if (!raw.name || !raw.handle) {
     throw new Error('Chilli must have a name and a handle')
@@ -166,7 +166,7 @@ interface IGetChilliesOpts {
   }
 }
 
-export const getChilliesFromAirtable = async (opts: IGetChilliesOpts = { view: 'All' }): Promise<IChilli[]> => {
+export const getChilliesFromAirtable = async (opts: IGetChilliesOpts = { view: 'All' }): Promise<ICultivar[]> => {
   const view = opts?.view ?? 'All'
 
   const sort = opts?.sort ?? {

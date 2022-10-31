@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getChilliesFromAirtable } from '~/lib/airtable'
-import { filterArrayToAirtableFilter } from '~/lib/filters'
+import getChilliData from '~/lib/getChilliData'
 
 /* simple API route that accepts
 a POST req where the body is an array of 
@@ -15,8 +15,7 @@ const getCount = async (req: NextApiRequest, res: NextApiResponse): Promise<void
   }
   try {
     const body = JSON.parse(req.body) as IFilter[]
-    const filterFormula = filterArrayToAirtableFilter(body)
-    const chillies = await getChilliesFromAirtable({ filterFormula })
+    const chillies = await getChilliData({ filters: body })
     res.status(200).json(chillies.length)
   } catch (e) {
     console.error(e)

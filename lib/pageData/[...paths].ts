@@ -5,15 +5,15 @@ import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
 
-export const getChilliPageDataFromPaths = async (paths: string[]): Promise<IChilliPageData> => {
-  let chillies: IChilli[] = []
-  let relatedChillies: IChilli[] = []
-  let requestType: IChilliPageData['requestType'] = null
+export const getChilliPageDataFromPaths = async (paths: string[]): Promise<ICultivarPageData> => {
+  let chillies: ICultivar[] = []
+  let relatedChillies: ICultivar[] = []
+  let requestType: ICultivarPageData['requestType'] = null
   const schema = await getFilterSchema()
   let filters: IFilter[] | null = null
 
   //@TODO: make getting the page data into a standalone function
-  const pageContent: IChilliPageData['pageContent'] = {
+  const pageContent: ICultivarPageData['pageContent'] = {
     title: 'List of Chilli Pepper Culitvars',
     description: 'Explore chilli pepper cultivars',
     content: '',

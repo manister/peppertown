@@ -11,7 +11,7 @@ import HighlightText from '~/components/global/HighlightText'
 import SchemaMarkup from '~/components/global/SchemaMarkup'
 
 interface Props {
-  chillies: IChilli[]
+  chillies: ICultivar[]
   filters?: IFilter[]
 }
 

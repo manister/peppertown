@@ -17,7 +17,7 @@ import ReactMarkdown from 'react-markdown'
 import Breadcrumbs from '~/components/global/Breadcrumbs'
 import Banner from '~/components/global/Banner'
 
-type Props = IChilliPageData
+type Props = ICultivarPageData
 
 interface IParams extends ParsedUrlQuery {
   paths: string[] | undefined
@@ -100,7 +100,7 @@ const ChilliPage = ({ chillies, requestType, filters, pageContent, relatedChilli
       <Layout>
         <Head>
           <title>{chilli.name}</title>
-          <meta name="description" content={`All about ${chilli.name}, a cultivar of Capsicum ${chilli.species[0]?.name}`} />
+          <meta name="description" content={`All about ${chilli.name}, a cultivar of Capsicum ${chilli.species?.name}`} />
         </Head>
         <Breadcrumbs
           links={[

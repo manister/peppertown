@@ -9,17 +9,17 @@ import Container from '~/components/layout/Container'
 import { schemaMarkupFromChilli } from '~/lib/schemaMarkup'
 
 interface Props {
-  chilli: IChilli
-  relatedChillies: IChilli[]
+  chilli: ICultivar
+  relatedChillies: ICultivar[]
 }
 
 const FullChilliProfile = (props: Props): JSX.Element => {
-  const { images, name, desc } = props.chilli
+  const { image, name, desc } = props.chilli
   const { relatedChillies } = props
-  const defaultImage = images[0]
+  const defaultImage = image
   const alt = defaultImage?.alt ?? 'No image available'
 
-  const src = defaultImage?.cloudinaryUrl ? defaultImage.cloudinaryUrl : '/placeholder-pepper.jpg'
+  const src = defaultImage?.src ? defaultImage.src : '/placeholder-pepper.jpg'
 
   const structuredData = schemaMarkupFromChilli(props.chilli)
   return (
@@ -33,13 +33,7 @@ const FullChilliProfile = (props: Props): JSX.Element => {
             </HighlightText>{' '}
             <br />
             <div className="my-3 inline-flex border border-gray-300 text-[0px]">
-              <ImageWithCredit
-                credit={defaultImage?.attr}
-                width={defaultImage?.width ?? 600}
-                height={defaultImage?.height ?? 600}
-                alt={alt}
-                src={src}
-              />
+              <ImageWithCredit credit={defaultImage?.attribution} width={600} height={600} alt={alt} src={src} />
             </div>
             <div className="my-3">
               <ChilliDetails {...props.chilli} />
