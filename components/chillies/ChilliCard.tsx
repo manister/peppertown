@@ -10,7 +10,7 @@ const ChilliCard = (props: ICultivar): JSX.Element => {
   const defaultImage = image
   const alt = defaultImage?.alt ?? 'No image available'
 
-  const src = defaultImage?.src ? defaultImage.src : '/placeholder-pepper.jpg'
+  const src = defaultImage?.handle ? `${defaultImage.handle}.jpg` : '/placeholder-pepper.jpg'
 
   return (
     <div className="w-1/1 h-1/1  overflow-hidden flex flex-col border-b-4 border-b-black border-x border-x-slate-300 border-t border-t-slate-300 bg-white">

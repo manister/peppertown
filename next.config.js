@@ -6,7 +6,6 @@ module.exports = {
     })
     return config
   },
-
   images: {
     domains: ['res.cloudinary.com'],
     loader: 'cloudinary',
@@ -15,5 +14,4 @@ module.exports = {
   experimental: {
     scrollRestoration: true,
   },
-
 }

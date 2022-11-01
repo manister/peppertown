@@ -4,8 +4,6 @@ interface ICultivar {
   desc: string
   scovilleMax: number
   scovilleMin: number
-  sowmin: Date | null
-  sowmax: Date | null
   ttm: number
   colour: IColour | null
   species: ISpecies | null
@@ -31,7 +29,6 @@ interface IImage {
   handle: string
   alt: string
   attribution: string
-  src: string
 }
 
 interface IOrigin {
@@ -48,6 +45,12 @@ interface IFilterBaseValue {
   displayValue: string
 }
 
+interface IFilterValue {
+  value: string
+  displayValue: string
+  active: boolean
+}
+
 interface IFilterSchemaColourValue extends IFilterBaseValue {
   displayType: 'colour'
   rgb: [number, number, number]
@@ -59,11 +62,11 @@ interface IFilterSchemaTextValue extends IFilterBaseValue {
 
 type IFilterSchemaValue = IFilterSchemaColourValue | IFilterSchemaTextValue
 
-interface IFilterColourValue extends IFilterColourSchemaValue {
+interface IFilterColourValue extends IFilterSchemaColourValue {
   active: boolean
 }
 
-interface IFilterTextValue extends IFilterTextSchemaValue {
+interface IFilterTextValue extends IFilterSchemaTextValue {
   active: boolean
 }
 
@@ -79,7 +82,7 @@ interface IFilterSchemaColourList extends IFilterBaseList {
 }
 
 interface IFilterColourList extends IFilterSchemaColourList {
-  values: IFilterValue[]
+  values: IFilterColourValue[]
 }
 
 interface IFilterSchemaTextList extends IFilterBaseList {

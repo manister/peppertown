@@ -4,19 +4,20 @@ import React from 'react'
 import ChilliListing from '~/components/chillies/ChillisListing'
 import Layout from '~/components/layout/Layout'
 import Head from 'next/head'
-import { getChilliesFromAirtable } from '~/lib/airtable'
+
 import { shuffle } from '~/lib/dataHelpers'
 import LinkTo from '~/components/global/LinkTo'
 import Button from '~/components/global/Button'
 import Container from '~/components/layout/Container'
 import Banner from '~/components/global/Banner'
+import getChilliData from '~/lib/getChilliData'
 
 interface Props {
   chillies: ICultivar[]
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  const chillies = await getChilliesFromAirtable()
+  const chillies = await getChilliData()
   const todaysChillies = shuffle(chillies).slice(0, 8)
   return {
     props: { chillies: todaysChillies },

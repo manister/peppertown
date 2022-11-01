@@ -1,8 +1,8 @@
-import { Prisma } from '@prisma/client'
-import { getBasicDataFromAirtable } from './airtable'
+import { Prisma, PrismaClient } from '@prisma/client'
+
 import { arrShallowEq } from './dataHelpers'
 
-const airtableDataToTextFilter = (data: IOrigin[] | ISpecies[] | IColour[]): IFilterSchemaTextValue[] => {
+const dataToTextFilter = (data: IOrigin[] | ISpecies[] | IColour[]): IFilterSchemaTextValue[] => {
   return data.map((val) => ({
     value: val.handle,
     displayValue: val.name,
@@ -11,8 +11,9 @@ const airtableDataToTextFilter = (data: IOrigin[] | ISpecies[] | IColour[]): IFi
 }
 
 export const getFilterSchema = async (): Promise<IFilterSchema[]> => {
-  const species = await getBasicDataFromAirtable('species')
-  const origins = await getBasicDataFromAirtable('origins')
+  const prisma = new PrismaClient()
+  const species = await prisma.species.findMany()
+  const origins = await prisma.origin.findMany()
   // const colours = await getBasicDataFromAirtable('colours')
 
   const filterSchema = [
@@ -21,14 +22,14 @@ export const getFilterSchema = async (): Promise<IFilterSchema[]> => {
       name: 'species',
       displayName: 'Species',
       displayType: 'text',
-      values: airtableDataToTextFilter(species),
+      values: dataToTextFilter(species),
     },
     {
       type: 'list',
       name: 'origin',
       displayName: 'Origin',
       displayType: 'text',
-      values: airtableDataToTextFilter(origins),
+      values: dataToTextFilter(origins),
     },
     // {
     //   type: 'list',
@@ -39,6 +40,7 @@ export const getFilterSchema = async (): Promise<IFilterSchema[]> => {
     // },
     {
       type: 'doublerange',
+      name: 'scoville',
       nameMax: 'scovilleMax',
       nameMin: 'scovilleMin',
       displayName: 'Scoville',
@@ -59,8 +61,19 @@ export const getFilterSchema = async (): Promise<IFilterSchema[]> => {
   for checkbox/radio types: ["filterName.name", "filterValue.value+filterValue.value"]
   or for range types: ["filterName.name", "min:max"]
 
-  C) An airtable string filter string, eg:
-  "AND(OR(FIND("annuum", {species/handle}), FIND("chinense", {species/handle})))"
+  C) A primsa cultivarWhereInput eg
+  {
+    "AND": [
+      {
+        "scovilleMax": {
+          "gte": 0
+        },
+        "scovilleMin": {
+          "lte": 2200000
+        }
+      }
+    ]
+  }
 
   We need to convert between A and B, in both directions
   We need to be able to convert A/B into C
@@ -146,35 +159,6 @@ export const pathArrayToFilterArray = (pathArray: [string, string][], filterSche
   return filters
 }
 
-// export const filterArrayToAirtableFilter = (filterArray: IFilter[]): string => {
-//   const airtableArray = filterArray.flatMap((filter) => {
-//     if (filter.type === 'range') {
-//       const [min, max] = filter.active
-//       if (arrShallowEq(filter.domain, filter.active)) return [] //Unselected
-//       if ((min && isNaN(min)) || (max && isNaN(max))) {
-//         throw new Error('Range for range values filter must be 2 numbers, seperated by a double-colon.')
-//       }
-//       if (filter.subType === 'range') {
-//         return `AND(${filter.name} >= ${min}, ${filter.name} <= ${max})`
-//       }
-//       if (filter.subType === 'rangerange') {
-//         return `AND(${filter.name}_max >= ${min}, ${filter.name}_min <= ${max})`
-//       }
-//       return []
-//     }
-//     if (filter.type === 'list') {
-//       const activeValues = filter.values.filter((value) => value.active)
-//       if (activeValues.length < 1) return [] // unselected
-//       return `OR(${activeValues.reduce((acc, filterValue, i) => {
-//         //build up an OR filter
-//         return `${acc}FIND("${filterValue.value}", {${filter.name}/handle})${i + 1 === activeValues.length ? '' : ', '}`
-//       }, '')})`
-//     }
-//   })
-//   const ret = `AND(${airtableArray.join(', ')})`
-//   return ret
-// }
-
 export const updateRangeFilter = (filters: IFilter[], filterIndex: number, val: [number | null, number | null]): IFilter[] => {
   const newFilters = [...filters]
   const filter = newFilters[filterIndex]
@@ -217,7 +201,7 @@ export const updateListFilter = (filters: IFilter[], filterIndex: number, option
 
 export const filterArrayToPrismaWhere = (filterArray: IFilter[]): Prisma.cultivarWhereInput => {
   const ret: Prisma.cultivarWhereInput = {}
-  const andArray = []
+  ret.AND = []
 
   for (const filter of filterArray) {
     if (filter.type === 'range') {
@@ -225,7 +209,7 @@ export const filterArrayToPrismaWhere = (filterArray: IFilter[]): Prisma.cultiva
       if ((min && isNaN(min)) || (max && isNaN(max))) {
         throw new Error('Range for range values filter must be 2 numbers, seperated by a colon.')
       }
-      andArray.push({
+      ret.AND.push({
         AND: [
           {
             [filter.name]: {
@@ -242,7 +226,7 @@ export const filterArrayToPrismaWhere = (filterArray: IFilter[]): Prisma.cultiva
       if ((min && isNaN(min)) || (max && isNaN(max))) {
         throw new Error('Range for range values filter must be 2 numbers, seperated by a colon.')
       }
-      andArray.push({
+      ret.AND.push({
         AND: [
           {
             [filter.nameMax]: {
@@ -255,16 +239,27 @@ export const filterArrayToPrismaWhere = (filterArray: IFilter[]): Prisma.cultiva
         ],
       })
     } else if (filter.type === 'list') {
-      const activeValues = filter.values.filter((value) => value.active)
-      andArray.push({
-        OR: activeValues.map((value) => {
-          return {
-            [filter.name]: value,
-          }
-        }),
-      })
+      const activeValues = (filter.values as IFilterValue[]).filter((value) => value.active)
+      if (activeValues.length > 1) {
+        ret.AND.push({
+          OR: activeValues
+            .map((filterValue) => {
+              if (filterValue.active) {
+                return {
+                  [filter.name]: {
+                    handle: {
+                      equals: filterValue.value,
+                    },
+                  },
+                }
+              }
+              return []
+            })
+            .flat(),
+        })
+      }
     }
   }
-  ret.AND = andArray
+  console.log({ ret })
   return ret
 }

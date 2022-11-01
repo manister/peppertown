@@ -18,7 +18,6 @@ model species {
 model image {
   name        String     @default("")
   handle      String     @unique(map: "image_library_handle_key") @default("")
-  src         String     @default("") @map("src_raw")
   alt         String     @default("")
   attribution String     @default("")
   createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamp(6)
@@ -52,8 +51,8 @@ model cultivar {
   scovilleMin    Int       @default(0) @map("scoville_min")
   scovilleMax    Int       @default(0) @map("scoville_max")
   ttm            Int       @default(90)
-  sowmin         DateTime? @db.Date
-  sowmax         DateTime? @db.Date
+  sowmin         DateTime? @db.Timestamp(6)
+  sowmax         DateTime? @db.Timestamp(6)
   origin_handle  String?
   species_handle String?
   image_handle   String?

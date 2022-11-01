@@ -28,13 +28,12 @@ const ChilliDetails = (props: ICultivar): JSX.Element => {
   return (
     <>
       <div className="text-slate-600">
-        {scovilleMin && scovilleMax && (
-          <ChilliDetailSection label="Heat:" emoji="🔥">
-            <span className="font-bold">
-              {scovilleMin} - {scovilleMax} SHU
-            </span>
-          </ChilliDetailSection>
-        )}
+        <ChilliDetailSection label="Heat:" emoji="🔥">
+          <span className="font-bold">
+            {scovilleMin} - {scovilleMax} SHU
+          </span>
+        </ChilliDetailSection>
+
         {species && (
           //Make into component for species list
           <ChilliDetailSection label="Species:" emoji="🍃">

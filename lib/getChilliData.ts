@@ -1,17 +1,16 @@
 import { PrismaClient } from '@prisma/client'
 import { filterArrayToPrismaWhere } from '~/lib/filters'
-// import { shapeChilliData } from '~/lib/shapers'
 
 interface Opts {
   filters: IFilter[]
 }
 
-const getChilliData = async (opts: Opts): Promise<ICultivar[]> => {
-  const { filters } = opts
-  const where = filterArrayToPrismaWhere(filters)
+const getChilliData = async (opts?: Opts): Promise<ICultivar[]> => {
+  const where = opts?.filters ? filterArrayToPrismaWhere(opts.filters) : null
+
   const prisma = new PrismaClient()
   const cultivars: ICultivar[] = await prisma.cultivar.findMany({
-    where,
+    ...(where ? { where } : {}),
     select: {
       handle: true,
       name: true,
@@ -19,8 +18,6 @@ const getChilliData = async (opts: Opts): Promise<ICultivar[]> => {
       scovilleMax: true,
       scovilleMin: true,
       ttm: true,
-      sowmin: true,
-      sowmax: true,
       //relations:
       species: {
         select: {
@@ -46,7 +43,6 @@ const getChilliData = async (opts: Opts): Promise<ICultivar[]> => {
       image: {
         select: {
           name: true,
-          src: true,
           alt: true,
           attribution: true,
           handle: true,

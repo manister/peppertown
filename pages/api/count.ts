@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { getChilliesFromAirtable } from '~/lib/airtable'
 import getChilliData from '~/lib/getChilliData'
 
 /* simple API route that accepts
