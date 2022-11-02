@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import getChilliData from '~/lib/getChilliData'
+import { getChilliData } from '~/lib/chilliData'
 
 /* simple API route that accepts
 a POST req where the body is an array of 

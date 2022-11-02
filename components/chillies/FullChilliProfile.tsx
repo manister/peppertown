@@ -19,7 +19,7 @@ const FullChilliProfile = (props: Props): JSX.Element => {
   const defaultImage = image
   const alt = defaultImage?.alt ?? 'No image available'
 
-  const src = defaultImage?.src ? defaultImage.src : '/placeholder-pepper.jpg'
+  const src = defaultImage?.handle ? `${defaultImage.handle}.jpg` : '/placeholder-pepper.jpg'
 
   const structuredData = schemaMarkupFromChilli(props.chilli)
   return (

@@ -10,7 +10,7 @@ import LinkTo from '~/components/global/LinkTo'
 import Button from '~/components/global/Button'
 import Container from '~/components/layout/Container'
 import Banner from '~/components/global/Banner'
-import getChilliData from '~/lib/getChilliData'
+import { getChilliData } from '~/lib/chilliData'
 
 interface Props {
   chillies: ICultivar[]
