@@ -41,12 +41,15 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   const { paths } = params as IParams
-  const { chillies, requestType, filters, pageContent, relatedChillies } = await getChilliPageDataFromPaths(paths ?? [])
+  const { chillies, requestType, page, sort, filters, pageContent, relatedChillies, count } = await getChilliPageDataFromPaths(paths ?? [])
 
   return {
     props: {
       chillies,
       requestType,
+      count,
+      page,
+      sort,
       filters,
       pageContent,
       relatedChillies,
@@ -56,7 +59,7 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   }
 }
 
-const ChilliPage = ({ chillies, requestType, filters, pageContent, relatedChillies }: Props): JSX.Element => {
+const ChilliPage = ({ chillies, requestType, count, page, sort, filters, pageContent, relatedChillies }: Props): JSX.Element => {
   if (requestType === 'listing') {
     return (
       <Layout>
@@ -91,7 +94,7 @@ const ChilliPage = ({ chillies, requestType, filters, pageContent, relatedChilli
           ]}
         />
 
-        <ChilliListing {...(filters ? { filters } : {})} chillies={chillies} />
+        <ChilliListing {...(filters ? { filters } : {})} chillies={chillies} count={count} page={page} sort={sort} />
       </Layout>
     )
   } else if (requestType === 'handle' && chillies.length > 0) {

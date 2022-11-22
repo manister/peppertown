@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { getChilliData } from '~/lib/chilliData'
+import { getChilliCount } from '~/lib/chilliData'
 
 /* simple API route that accepts
 a POST req where the body is an array of 
@@ -14,10 +14,11 @@ const getCount = async (req: NextApiRequest, res: NextApiResponse): Promise<void
   }
   try {
     const body = JSON.parse(req.body) as IFilter[]
-    const chillies = await getChilliData({ filters: body })
-    res.status(200).json(chillies.length)
+    const count = await getChilliCount({ filters: body })
+    res.status(200).json(count)
   } catch (e) {
     console.error(e)
+    res.status(500).send({ message: e })
   }
 }
 

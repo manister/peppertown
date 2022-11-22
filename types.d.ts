@@ -140,6 +140,8 @@ interface IActionRemoveFromWishlist {
 
 type IAction = IActionIncrementCount | IActionSetCount
 
+type TSort = { dir: 'asc' | 'desc'; by: string } | null
+
 interface IAppContext {
   state: IState
   actions: {
@@ -156,6 +158,9 @@ type ICultivarPageData = {
   relatedChillies: ICultivar[]
   requestType: 'listing' | 'handle' | null
   filters: IFilter[] | null
+  count: number
+  sort: TSort
+  page: number
   pageContent: {
     title: string
     description: string

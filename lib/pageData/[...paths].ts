@@ -1,17 +1,11 @@
-import { chunk } from '../dataHelpers'
+import { chunk, pathToPathsAndSortAndPage } from '../dataHelpers'
 import { getFilterSchema, pathArrayToFilterArray } from '../filters'
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
-import { getChilliData, getSingleChilli } from '~/lib/chilliData'
+import { getChilliCount, getChilliData, getRelatedChillies, getSingleChilli } from '~/lib/chilliData'
 
-export const getChilliPageDataFromPaths = async (paths: string[]): Promise<ICultivarPageData> => {
-  let chillies: ICultivar[] = []
-  // let relatedChillies: ICultivar[] = []
-  let requestType: ICultivarPageData['requestType'] = null
-  const schema = await getFilterSchema()
-  let filters: IFilter[] | null = null
-
+const getStaticPageContent = (paths: string[]): ICultivarPageData['pageContent'] => {
   //@TODO: make getting the page data into a standalone function
   const pageContent: ICultivarPageData['pageContent'] = {
     title: 'List of Chilli Pepper Culitvars',
@@ -24,7 +18,10 @@ export const getChilliPageDataFromPaths = async (paths: string[]): Promise<ICult
   }
   if (paths?.length === 2) {
     try {
-      const fileContents = fs.readFileSync(path.join(process.cwd(), `content/pages/${paths[0]}/${paths[1]}.md`), 'utf-8')
+      const filePath = path.join(process.cwd(), `content/pages/${paths[0]}/${paths[1]}.md`)
+      const fileExists = fs.existsSync(filePath)
+      if (!fileExists) return pageContent
+      const fileContents = fs.readFileSync(filePath, 'utf-8')
       const { data, content } = matter(fileContents)
       const { title, description, image, alt } = data as { title: string; description: string; image: string; alt: string }
       pageContent.title = title
@@ -36,52 +33,56 @@ export const getChilliPageDataFromPaths = async (paths: string[]): Promise<ICult
       }
     } catch (e) {
       console.error(e)
+      return pageContent
     }
   }
+  return pageContent
+}
+
+export const getChilliPageDataFromPaths = async (rawPaths: string[]): Promise<ICultivarPageData> => {
+  let chillies: ICultivar[] = []
+  let relatedChillies: ICultivar[] = []
+  let requestType: ICultivarPageData['requestType'] = null
+  let count = 0
+  const schema = await getFilterSchema()
+  let filters: IFilter[] | null = null
+  const pageContent = getStaticPageContent(rawPaths)
+
+  const { sort, page, paths } = pathToPathsAndSortAndPage(rawPaths)
 
   try {
     if (paths.length === 1 && paths[0] === 'cultivars') {
       //no paths, load all chillies
       requestType = 'listing'
       filters = pathArrayToFilterArray([], schema)
-
-      chillies = await getChilliData()
-    } else if (paths[0] === 'cultivars') {
+      chillies = await getChilliData({ page })
+      count = await getChilliCount()
+    } else if (paths.length == 2 && paths[0] === 'cultivars') {
       //this is a handle page
       requestType = 'handle'
-      // const filterFormula = `{handle}="${paths[1]}"`
-      const handle = paths[1]
-      if (handle) {
-        chillies = [await getSingleChilli(handle)]
-      }
-    } else if (paths.length > 1) {
-      //   //do we have a sort by?
-      //   const last = paths[paths.length - 1]
-      //   const hasSort = last && last?.includes('sort:')
-      //   let sort: { direction: 'asc' | 'desc'; field: string } | null = null
+      const handle = paths[1] as string
 
-      //   if (hasSort) {
-      //     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      //     const [_s, field, dir] = last.split(':')
-      //     if (field && dir) {
-      //       const direction: 'asc' | 'desc' = dir === 'asc' || dir === 'desc' ? dir : 'asc'
-      //       sort = { field, direction }
-      //     }
-      //   }
-      const hasSort = false
-      const filterPaths = chunk(hasSort ? paths.slice(0, -1) : paths)
+      const chilli = await getSingleChilli(handle)
+      chillies = [chilli]
+
+      relatedChillies = await getRelatedChillies(chilli, 4)
+
+      //try and get at least 4 related chillies
+    } else if (paths.length > 1) {
+      const filterPaths = chunk(paths)
 
       filters = pathArrayToFilterArray(filterPaths, schema)
 
       if (filters) {
         requestType = 'listing'
+        const data = await getChilliData({ filters, page, ...(sort ? { sort } : {}) })
+        count = await getChilliCount({ filters })
 
-        const data = await getChilliData({ filters })
         chillies = data
       }
     }
   } catch (e) {
     console.error({ error: e })
   }
-  return { chillies, requestType, filters, pageContent, relatedChillies: [] }
+  return { chillies, requestType, filters, count, page, sort, pageContent, relatedChillies: relatedChillies }
 }

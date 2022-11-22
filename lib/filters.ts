@@ -240,7 +240,7 @@ export const filterArrayToPrismaWhere = (filterArray: IFilter[]): Prisma.cultiva
       })
     } else if (filter.type === 'list') {
       const activeValues = (filter.values as IFilterValue[]).filter((value) => value.active)
-      if (activeValues.length > 1) {
+      if (activeValues.length > 0) {
         ret.AND.push({
           OR: activeValues
             .map((filterValue) => {
@@ -260,6 +260,5 @@ export const filterArrayToPrismaWhere = (filterArray: IFilter[]): Prisma.cultiva
       }
     }
   }
-  console.log({ ret })
   return ret
 }

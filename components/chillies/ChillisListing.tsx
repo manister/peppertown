@@ -4,25 +4,34 @@ import Emoji from '../global/Emoji'
 import ChilliCard from './ChilliCard'
 import ChilliFilters from './ChilliFilters'
 
-import { ItemList, WithContext } from 'schema-dts'
 import Container from '~/components/layout/Container'
 import { schemaMarkupFromListOfChillies } from '~/lib/schemaMarkup'
 import HighlightText from '~/components/global/HighlightText'
 import SchemaMarkup from '~/components/global/SchemaMarkup'
 
+import LinkTo from '~/components/global/LinkTo'
+import { pathToPathsAndSortAndPage } from '~/lib/dataHelpers'
+
 interface Props {
   chillies: ICultivar[]
+  count?: number
+  page?: number
+  sort?: TSort
   filters?: IFilter[]
 }
 
 const ChilliListing = (props: Props): JSX.Element => {
-  const { chillies, filters } = props
+  const { chillies, filters, page, count } = props
 
   const [filtersOpen, setFiltersOpen] = useState(false)
 
-  const { asPath } = useRouter()
+  const { asPath, query } = useRouter()
 
   const structuredData = schemaMarkupFromListOfChillies(chillies, asPath)
+
+  const totalPages = count ? Math.ceil(count / 12) : 1
+
+  const { paths } = pathToPathsAndSortAndPage(Array.isArray(query.paths) ? query.paths : [])
 
   return (
     <Container>
@@ -39,7 +48,13 @@ const ChilliListing = (props: Props): JSX.Element => {
             </span>{' '}
             Filters
           </button>
-          <HighlightText className="my-3 bg-green-700">{chillies.length} Peppers Found</HighlightText>
+          {typeof count !== 'undefined' && !isNaN(count) ? (
+            <HighlightText className="my-3 bg-green-700">
+              {count} Peppers Found <br></br> {totalPages > 1 ? `Page ${page} of ${totalPages}` : ''}
+            </HighlightText>
+          ) : (
+            ''
+          )}
         </div>
       )}
 
@@ -50,6 +65,21 @@ const ChilliListing = (props: Props): JSX.Element => {
             <ChilliCard {...chilli} />
           </li>
         ))}
+      </ul>
+      <ul className="flex justify-center mb-3">
+        {totalPages > 1
+          ? Array.from({ length: totalPages }, (_i, n) => n + 1).map((pageNo) => {
+              return (
+                <li className="mx-1" key={pageNo}>
+                  {pageNo === page ? (
+                    <span className="underline">{pageNo}</span>
+                  ) : (
+                    <LinkTo href={`${paths.join('/')}/${pageNo}`}>{pageNo}</LinkTo>
+                  )}
+                </li>
+              )
+            })
+          : ''}
       </ul>
     </Container>
   )
