@@ -1,9 +1,9 @@
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 
-import { filterArrayToPathArray, updateListFilter } from '~/lib/filters'
+import { filterArrayToPathArray, updateListFilter } from '~/lib/calculations/filters'
 import { useDebounce } from 'use-debounce'
-import ListFilter from './ChilliFilters/ListFilter'
+import ListFilter from './CultivarFilters/ListFilter'
 import Button from '../global/Button'
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
   setOpen: (value: boolean) => void
 }
 
-const ChilliFilters = (props: Props): JSX.Element => {
+const CultivarFilters = (props: Props): JSX.Element => {
   const { filters, open, setOpen } = props
   const router = useRouter()
 
@@ -132,4 +132,4 @@ const ChilliFilters = (props: Props): JSX.Element => {
   )
 }
 
-export default ChilliFilters
+export default CultivarFilters

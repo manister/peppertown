@@ -1,7 +1,8 @@
-import { getBasicDataFromAirtable } from './airtable'
-import { arrShallowEq } from './dataHelpers'
+import { Prisma } from '@prisma/client'
 
-const airtableDataToTextFilter = (data: IOrigin[] | ISpecies[] | IColour[]): IFilterSchemaTextValue[] => {
+import { arrShallowEq } from './helpers'
+
+export const dataToTextFilter = (data: IOrigin[] | ISpecies[] | IColour[]): IFilterSchemaTextValue[] => {
   return data.map((val) => ({
     value: val.handle,
     displayValue: val.name,
@@ -9,9 +10,8 @@ const airtableDataToTextFilter = (data: IOrigin[] | ISpecies[] | IColour[]): IFi
   }))
 }
 
-export const getFilterSchema = async (): Promise<IFilterSchema[]> => {
-  const species = await getBasicDataFromAirtable('species')
-  const origins = await getBasicDataFromAirtable('origins')
+export const dataToFilterSchema = async (data: { species: ISpecies[]; origins: IOrigin[] }): Promise<IFilterSchema[]> => {
+  const { species, origins } = data
   // const colours = await getBasicDataFromAirtable('colours')
 
   const filterSchema = [
@@ -20,14 +20,14 @@ export const getFilterSchema = async (): Promise<IFilterSchema[]> => {
       name: 'species',
       displayName: 'Species',
       displayType: 'text',
-      values: airtableDataToTextFilter(species),
+      values: dataToTextFilter(species),
     },
     {
       type: 'list',
       name: 'origin',
       displayName: 'Origin',
       displayType: 'text',
-      values: airtableDataToTextFilter(origins),
+      values: dataToTextFilter(origins),
     },
     // {
     //   type: 'list',
@@ -35,11 +35,13 @@ export const getFilterSchema = async (): Promise<IFilterSchema[]> => {
     //   displayName: 'Colours',
     //   displayType: 'text',
     //   values: airtableDataToTextFilter(colours),
+    //
     // },
     {
-      type: 'range',
-      subType: 'rangerange',
+      type: 'doublerange',
       name: 'scoville',
+      nameMax: 'scovilleMax',
+      nameMin: 'scovilleMin',
       displayName: 'Scoville',
       domain: [0, 2200000],
     },
@@ -58,8 +60,19 @@ export const getFilterSchema = async (): Promise<IFilterSchema[]> => {
   for checkbox/radio types: ["filterName.name", "filterValue.value+filterValue.value"]
   or for range types: ["filterName.name", "min:max"]
 
-  C) An airtable string filter string, eg:
-  "AND(OR(FIND("annuum", {species/handle}), FIND("chinense", {species/handle})))"
+  C) A primsa cultivarWhereInput eg
+  {
+    "AND": [
+      {
+        "scovilleMax": {
+          "gte": 0
+        },
+        "scovilleMin": {
+          "lte": 2200000
+        }
+      }
+    ]
+  }
 
   We need to convert between A and B, in both directions
   We need to be able to convert A/B into C
@@ -77,7 +90,7 @@ export const filterArrayToPathArray = (filterArray: IFilter[]): [string, string]
   return filterArray.flatMap((filter) => {
     const handle = filter.name
     const valueString =
-      filter.type === 'range'
+      filter.type === 'range' || filter.type === 'doublerange'
         ? arrShallowEq(filter.active, filter.domain)
           ? ''
           : filter.active.join(':')
@@ -93,7 +106,7 @@ export const pathArrayToFilterArray = (pathArray: [string, string][], filterSche
       //does every item
       const group = filterSchema.find(({ name }) => name === item[0])
       if (!group) return false
-      if (group.type === 'range') return true
+      if (group.type === 'range' || group.type === 'doublerange') return true
 
       const valueMatches = group.values.some((value) => {
         const values = item[1].split('+')
@@ -109,7 +122,7 @@ export const pathArrayToFilterArray = (pathArray: [string, string][], filterSche
   const filters = filterSchema.map((filter) => {
     const match = pathArray.find((item) => item[0] === filter.name)
 
-    if (filter.type === 'range') {
+    if (filter.type === 'range' || filter.type === 'doublerange') {
       let active = filter.domain
       if (match) {
         const valueString = match[1]
@@ -122,7 +135,7 @@ export const pathArrayToFilterArray = (pathArray: [string, string][], filterSche
         ...filter,
         active,
         selected: active,
-      } as IFilterRange
+      }
     } else {
       const valueStrings = match && match.length === 2 ? match[1].split('+') : []
       const values = match
@@ -143,35 +156,6 @@ export const pathArrayToFilterArray = (pathArray: [string, string][], filterSche
   })
 
   return filters
-}
-
-export const filterArrayToAirtableFilter = (filterArray: IFilter[]): string => {
-  const airtableArray = filterArray.flatMap((filter) => {
-    if (filter.type === 'range') {
-      const [min, max] = filter.active
-      if (arrShallowEq(filter.domain, filter.active)) return [] //Unselected
-      if ((min && isNaN(min)) || (max && isNaN(max))) {
-        throw new Error('Range for range values filter must be 2 numbers, seperated by a double-colon.')
-      }
-      if (filter.subType === 'range') {
-        return `AND(${filter.name} >= ${min}, ${filter.name} <= ${max})`
-      }
-      if (filter.subType === 'rangerange') {
-        return `AND(${filter.name}_max >= ${min}, ${filter.name}_min <= ${max})`
-      }
-      return []
-    }
-    if (filter.type === 'list') {
-      const activeValues = filter.values.filter((value) => value.active)
-      if (activeValues.length < 1) return [] // unselected
-      return `OR(${activeValues.reduce((acc, filterValue, i) => {
-        //build up an OR filter
-        return `${acc}FIND("${filterValue.value}", {${filter.name}/handle})${i + 1 === activeValues.length ? '' : ', '}`
-      }, '')})`
-    }
-  })
-  const ret = `AND(${airtableArray.join(', ')})`
-  return ret
 }
 
 export const updateRangeFilter = (filters: IFilter[], filterIndex: number, val: [number | null, number | null]): IFilter[] => {
@@ -212,4 +196,69 @@ export const updateListFilter = (filters: IFilter[], filterIndex: number, option
     option.active = value
   }
   return newFilters
+}
+
+//builds a prisma where from a filter array:
+export const filterArrayToPrismaWhere = (filterArray: IFilter[]): Prisma.cultivarWhereInput => {
+  const ret: Prisma.cultivarWhereInput = {}
+  ret.AND = []
+
+  for (const filter of filterArray) {
+    if (filter.type === 'range') {
+      const [min, max] = filter.active
+      if ((min && isNaN(min)) || (max && isNaN(max))) {
+        throw new Error('Range for range values filter must be 2 numbers, seperated by a colon.')
+      }
+      ret.AND.push({
+        AND: [
+          {
+            [filter.name]: {
+              gte: min,
+            },
+            [filter.name]: {
+              lte: max,
+            },
+          },
+        ],
+      })
+    } else if (filter.type === 'doublerange') {
+      const [min, max] = filter.active
+      if ((min && isNaN(min)) || (max && isNaN(max))) {
+        throw new Error('Range for range values filter must be 2 numbers, seperated by a colon.')
+      }
+      ret.AND.push({
+        AND: [
+          {
+            [filter.nameMax]: {
+              gte: min,
+            },
+            [filter.nameMin]: {
+              lte: max,
+            },
+          },
+        ],
+      })
+    } else if (filter.type === 'list') {
+      const activeValues = (filter.values as IFilterValue[]).filter((value) => value.active)
+      if (activeValues.length > 0) {
+        ret.AND.push({
+          OR: activeValues
+            .map((filterValue) => {
+              if (filterValue.active) {
+                return {
+                  [filter.name]: {
+                    handle: {
+                      equals: filterValue.value,
+                    },
+                  },
+                }
+              }
+              return []
+            })
+            .flat(),
+        })
+      }
+    }
+  }
+  return ret
 }

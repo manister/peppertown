@@ -1,23 +1,23 @@
 import React from 'react'
 import HighlightText from '~/components/global/HighlightText'
 import ImageWithCredit from '~/components/global/ImageWithCredit'
-import ChilliDetails from './ChilliDetails'
+import CultivarDetails from './CultivarDetails'
 
 // import { useGlobalState } from '~/state/context'
 
-const ChilliCard = (props: IChilli): JSX.Element => {
-  const { images, name, handle } = props
-  const defaultImage = images[0]
+const CultivarCard = (props: ICultivar): JSX.Element => {
+  const { image, name, handle } = props
+  const defaultImage = image
   const alt = defaultImage?.alt ?? 'No image available'
 
-  const src = defaultImage?.cloudinaryUrl ? defaultImage.cloudinaryUrl : '/placeholder-pepper.jpg'
+  const src = defaultImage?.handle ? `${defaultImage.handle}.jpg` : '/placeholder-pepper.jpg'
 
   return (
     <div className="w-1/1 h-1/1  overflow-hidden flex flex-col border-b-4 border-b-black border-x border-x-slate-300 border-t border-t-slate-300 bg-white">
       <div className="bg-gray-900">
         <ImageWithCredit
           href={`/cultivars/${handle}`}
-          credit={defaultImage?.attr}
+          credit={defaultImage?.attribution}
           className="block focus-visible:outline hover:outline outline-[3px]"
           width={600}
           height={500}
@@ -31,9 +31,9 @@ const ChilliCard = (props: IChilli): JSX.Element => {
           <h2>{name}</h2>
         </HighlightText>
 
-        <ChilliDetails {...props} />
+        <CultivarDetails {...props} />
       </div>
     </div>
   )
 }
-export default ChilliCard
+export default CultivarCard

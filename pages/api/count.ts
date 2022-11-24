@@ -1,11 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { getChilliesFromAirtable } from '~/lib/airtable'
-import { filterArrayToAirtableFilter } from '~/lib/filters'
+import { getCultivarCount } from '~/lib/actions/db-actions'
+import { filterArrayToPrismaWhere } from '~/lib/calculations/filters'
 
 /* simple API route that accepts
 a POST req where the body is an array of 
 filters and returns the total
-number of chillies that the
+number of cultivars that the
 array of filters would return */
 
 const getCount = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
@@ -14,12 +14,13 @@ const getCount = async (req: NextApiRequest, res: NextApiResponse): Promise<void
     return
   }
   try {
-    const body = JSON.parse(req.body) as IFilter[]
-    const filterFormula = filterArrayToAirtableFilter(body)
-    const chillies = await getChilliesFromAirtable({ filterFormula })
-    res.status(200).json(chillies.length)
+    const body: IFilter[] = JSON.parse(req.body)
+    const where = filterArrayToPrismaWhere(body)
+    const count = await getCultivarCount({ where })
+    res.status(200).json(count)
   } catch (e) {
     console.error(e)
+    res.status(500).send({ message: e })
   }
 }
 

@@ -1,16 +1,16 @@
 import { BreadcrumbList, ItemList, Taxon, WithContext } from 'schema-dts'
 
-export const schemaMarkupFromChilli = (chilli: IChilli): WithContext<Taxon> => {
+export const schemaMarkupFromCultivar = (cultivar: ICultivar): WithContext<Taxon> => {
   return {
     '@context': 'https://schema.org',
     '@type': 'Taxon',
     taxonRank: 'Cultivar',
-    name: chilli.name,
+    name: cultivar.name,
     parentTaxon: {
       '@type': 'Taxon',
       taxonRank: 'Species',
-      name: `Capsicum ${chilli.species[0]?.name}`,
-      sameAs: [`https://species.wikimedia.org/wiki/Capsicum_${chilli.species[0]?.handle}`],
+      name: `Capsicum ${cultivar.species?.name}`,
+      sameAs: [`https://species.wikimedia.org/wiki/Capsicum_${cultivar.species?.handle}`],
       parentTaxon: {
         '@type': 'Taxon',
         taxonRank: 'Genus',
@@ -22,16 +22,16 @@ export const schemaMarkupFromChilli = (chilli: IChilli): WithContext<Taxon> => {
   }
 }
 
-export const schemaMarkupFromListOfChillies = (chillies: IChilli[], path: string): WithContext<ItemList> => {
+export const schemaMarkupFromListOfCultivars = (cultivars: ICultivar[], path: string): WithContext<ItemList> => {
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     url: `https://pepper.town${path}`,
-    numberOfItems: chillies.length,
+    numberOfItems: cultivars.length,
     name: 'List of chilli peppers',
-    alternateName: ['List of chili peppers', 'List of hot peppers', 'List of chillies'],
-    itemListElement: chillies.map((chilli) => {
-      return schemaMarkupFromChilli(chilli)
+    alternateName: ['List of chili peppers', 'List of hot peppers', 'List of cultivars'],
+    itemListElement: cultivars.map((cultivar) => {
+      return schemaMarkupFromCultivar(cultivar)
     }),
   }
 }

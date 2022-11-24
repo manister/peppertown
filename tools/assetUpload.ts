@@ -34,7 +34,7 @@ const getRawAssets = async (): Promise<{ handle: string; url: string; id: string
 getRawAssets().then((assets) => {
   assets.forEach(async (asset) => {
     try {
-      const public_id = `${asset.handle}-${asset.id}`
+      const public_id = `${asset.handle}`
       const res = await cloudinary.v2.uploader.upload(asset.url, { public_id, unique_filename: true, overwrite: false })
       if (res.existing) {
         console.info(`${public_id} already exists, skipping`)

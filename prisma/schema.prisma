@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model species {
+  name      String     @default("")
+  handle    String     @unique
+  id        String     @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt DateTime   @default(now()) @map("created_at") @db.Timestamp(6)
+  cultivar  cultivar[]
+}
+
+model image {
+  name        String     @default("")
+  handle      String     @unique(map: "image_library_handle_key") @default("")
+  alt         String     @default("")
+  attribution String     @default("")
+  createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamp(6)
+  id          String     @id(map: "image_library_pkey") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  cultivar    cultivar[]
+}
+
+model origin {
+  name      String     @unique(map: "location_name_key") @default("")
+  handle    String     @unique(map: "location_handle_key") @default("")
+  createdAt DateTime   @default(now()) @map("created_at") @db.Timestamp(6)
+  id        String     @id(map: "location_pkey") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  cultivar  cultivar[]
+}
+
+model colour {
+  name      String     @default("")
+  handle    String     @unique(map: "colours_handle_key")
+  r         Int
+  g         Int
+  b         Int
+  createdAt DateTime   @default(now()) @map("created_at") @db.Timestamp(6)
+  id        String     @id(map: "colours_pkey") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  cultivar  cultivar[]
+}
+
+model cultivar {
+  name           String    @default("")
+  handle         String    @unique(map: "cultivars_handle_key") @default("")
+  desc           String    @default("")
+  scovilleMin    Int       @default(0) @map("scoville_min")
+  scovilleMax    Int       @default(0) @map("scoville_max")
+  ttm            Int       @default(90)
+  sowmin         DateTime? @db.Timestamp(6)
+  sowmax         DateTime? @db.Timestamp(6)
+  origin_handle  String?
+  species_handle String?
+  image_handle   String?
+  colour_handle  String?
+  id             String    @id(map: "cultivars_pkey") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  colour         colour?   @relation(fields: [colour_handle], references: [handle], onDelete: NoAction, onUpdate: NoAction)
+  image          image?    @relation(fields: [image_handle], references: [handle], onDelete: NoAction, onUpdate: NoAction)
+  origin         origin?   @relation(fields: [origin_handle], references: [handle], onDelete: NoAction, onUpdate: NoAction)
+  species        species?  @relation(fields: [species_handle], references: [handle], onDelete: NoAction, onUpdate: NoAction)
+}
