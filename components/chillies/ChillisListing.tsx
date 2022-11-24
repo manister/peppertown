@@ -25,7 +25,7 @@ const ChilliListing = (props: Props): JSX.Element => {
 
   const [filtersOpen, setFiltersOpen] = useState(false)
 
-  const { asPath, query } = useRouter()
+  const { asPath, query, push } = useRouter()
 
   const structuredData = schemaMarkupFromListOfChillies(chillies, asPath)
 
@@ -37,21 +37,34 @@ const ChilliListing = (props: Props): JSX.Element => {
     <Container>
       <SchemaMarkup data={structuredData} />
       {filters && (
-        <div className="flex justify-between my-3 px-2 items-center">
-          <button
-            className="p-2 font-bold bg-yellow underline md:no-underline md:hover:underline"
-            type="button"
-            onClick={() => setFiltersOpen(!filtersOpen)}
-          >
-            <span className="bg-white">
-              <Emoji src="⚙️" />
-            </span>{' '}
-            Filters
-          </button>
+        <div className="flex justify-between my-3 px-2 items-start">
+          <div>
+            <button
+              className="p-2 font-bold bg-yellow underline md:no-underline md:hover:underline"
+              type="button"
+              onClick={() => setFiltersOpen(!filtersOpen)}
+            >
+              <span className="bg-white">
+                <Emoji src="⚙️" />
+              </span>{' '}
+              Filters
+            </button>
+            {/* Sort by @TODO! 
+            <select onChange={push()}>
+
+            </select> */}
+          </div>
           {typeof count !== 'undefined' && !isNaN(count) ? (
-            <HighlightText className="my-3 bg-green-700">
-              {count} Peppers Found <br></br> {totalPages > 1 ? `Page ${page} of ${totalPages}` : ''}
-            </HighlightText>
+            <div>
+              <HighlightText className="mb-3 bg-green-700">{count} Peppers Found</HighlightText>
+              {totalPages > 1 ? (
+                <div className="mb-3">
+                  Page {page} of {totalPages}
+                </div>
+              ) : (
+                ''
+              )}
+            </div>
           ) : (
             ''
           )}
