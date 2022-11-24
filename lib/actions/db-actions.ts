@@ -1,8 +1,9 @@
-import { PrismaClient } from '@prisma/client'
-import { filterArrayToPrismaWhere } from '~/lib/filters'
+import { prismaCultivarSelects } from '~/lib/data/db-data'
+
+import { Prisma, PrismaClient } from '@prisma/client'
 
 interface Opts {
-  filters?: IFilter[]
+  where?: Prisma.cultivarWhereInput
   page?: number
   paginate?: number
   sort?: {
@@ -11,48 +12,9 @@ interface Opts {
   }
 }
 
-const prismaCultivarSelects = {
-  handle: true,
-  name: true,
-  desc: true,
-  scovilleMax: true,
-  scovilleMin: true,
-  ttm: true,
-  //relations:
-  species: {
-    select: {
-      handle: true,
-      name: true,
-    },
-  },
-  colour: {
-    select: {
-      handle: true,
-      name: true,
-      r: true,
-      g: true,
-      b: true,
-    },
-  },
-  origin: {
-    select: {
-      handle: true,
-      name: true,
-    },
-  },
-  image: {
-    select: {
-      name: true,
-      alt: true,
-      attribution: true,
-      handle: true,
-    },
-  },
-}
-
 const prisma = new PrismaClient()
 
-export const getSingleChilli = async (handle: string): Promise<ICultivar> => {
+export const getSingleCultivar = async (handle: string): Promise<ICultivar> => {
   const chilli = await prisma.cultivar.findUnique({
     where: {
       handle,
@@ -66,7 +28,7 @@ export const getSingleChilli = async (handle: string): Promise<ICultivar> => {
   }
 }
 
-export const getRelatedChillies = async (cultivar: ICultivar, n: number): Promise<ICultivar[]> => {
+export const getRelatedCultivars = async (cultivar: ICultivar, n: number): Promise<ICultivar[]> => {
   const fullMatches = await prisma.cultivar.findMany({
     take: n,
     select: prismaCultivarSelects,
@@ -81,7 +43,9 @@ export const getRelatedChillies = async (cultivar: ICultivar, n: number): Promis
     take: n - fullMatches.length,
     select: prismaCultivarSelects,
     where: {
-      NOT: { handle: cultivar.handle },
+      NOT: {
+        OR: [{ handle: cultivar.handle }, { handle: { in: fullMatches.map((item) => item.handle) } }],
+      },
       origin: { handle: cultivar.origin?.handle },
     },
   })
@@ -91,7 +55,13 @@ export const getRelatedChillies = async (cultivar: ICultivar, n: number): Promis
     take: n - fullMatches.length - originMatches.length,
     select: prismaCultivarSelects,
     where: {
-      NOT: { handle: cultivar.handle },
+      NOT: {
+        OR: [
+          { handle: cultivar.handle },
+          { handle: { in: fullMatches.map((item) => item.handle) } },
+          { handle: { in: originMatches.map((item) => item.handle) } },
+        ],
+      },
       species: { handle: cultivar.species?.handle },
     },
   })
@@ -99,8 +69,15 @@ export const getRelatedChillies = async (cultivar: ICultivar, n: number): Promis
   return [...fullMatches, ...originMatches, ...speciesMatches]
 }
 
-export const getChilliData = async (opts?: Opts): Promise<ICultivar[]> => {
-  const where = opts?.filters ? filterArrayToPrismaWhere(opts.filters) : null
+export const getCultivarCount = async (opts?: Opts): Promise<number> => {
+  const number = await prisma.cultivar.count({
+    ...(opts?.where ? { where: opts.where } : {}),
+  })
+  return number
+}
+
+//@TODO generalise this with getAll below
+export const getCultivars = async (opts?: Opts): Promise<ICultivar[]> => {
   const take = opts?.paginate ?? 12
   const skip = opts?.page ? (opts.page - 1) * take : 0
   const orderBy = opts?.sort
@@ -109,7 +86,7 @@ export const getChilliData = async (opts?: Opts): Promise<ICultivar[]> => {
       }
     : null
   const cultivars: ICultivar[] = await prisma.cultivar.findMany({
-    ...(where ? { where } : {}),
+    ...(opts?.where ? { where: opts.where } : {}),
     take,
     skip,
     ...(orderBy ? { orderBy } : {}),
@@ -118,10 +95,16 @@ export const getChilliData = async (opts?: Opts): Promise<ICultivar[]> => {
   return cultivars
 }
 
-export const getChilliCount = async (opts?: Opts): Promise<number> => {
-  const where = opts?.filters ? filterArrayToPrismaWhere(opts.filters) : null
-  const number = await prisma.cultivar.count({
-    ...(where ? { where } : {}),
+export const getAllCultivars = async (): Promise<ICultivar[]> => {
+  return await prisma.cultivar.findMany({
+    select: prismaCultivarSelects,
   })
-  return number
+}
+
+export const getAllSpecies = async (): Promise<ISpecies[]> => {
+  return await prisma.species.findMany()
+}
+
+export const getAllOrigins = async (): Promise<IOrigin[]> => {
+  return await prisma.origin.findMany()
 }

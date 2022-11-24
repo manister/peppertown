@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 
-import { filterArrayToPathArray, updateListFilter } from '~/lib/filters'
+import { filterArrayToPathArray, updateListFilter } from '~/lib/calculations/filters'
 import { useDebounce } from 'use-debounce'
 import ListFilter from './ChilliFilters/ListFilter'
 import Button from '../global/Button'

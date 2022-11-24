@@ -6,7 +6,7 @@ import HighlightText from '~/components/global/HighlightText'
 import ImageWithCredit from '~/components/global/ImageWithCredit'
 import SchemaMarkup from '~/components/global/SchemaMarkup'
 import Container from '~/components/layout/Container'
-import { schemaMarkupFromChilli } from '~/lib/schemaMarkup'
+import { schemaMarkupFromChilli } from '~/lib/calculations/schemaMarkup'
 
 interface Props {
   chilli: ICultivar

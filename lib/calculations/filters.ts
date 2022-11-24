@@ -1,8 +1,8 @@
-import { Prisma, PrismaClient } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 
-import { arrShallowEq } from './dataHelpers'
+import { arrShallowEq } from './helpers'
 
-const dataToTextFilter = (data: IOrigin[] | ISpecies[] | IColour[]): IFilterSchemaTextValue[] => {
+export const dataToTextFilter = (data: IOrigin[] | ISpecies[] | IColour[]): IFilterSchemaTextValue[] => {
   return data.map((val) => ({
     value: val.handle,
     displayValue: val.name,
@@ -10,10 +10,8 @@ const dataToTextFilter = (data: IOrigin[] | ISpecies[] | IColour[]): IFilterSche
   }))
 }
 
-export const getFilterSchema = async (): Promise<IFilterSchema[]> => {
-  const prisma = new PrismaClient()
-  const species = await prisma.species.findMany()
-  const origins = await prisma.origin.findMany()
+export const dataToFilterSchema = async (data: { species: ISpecies[]; origins: IOrigin[] }): Promise<IFilterSchema[]> => {
+  const { species, origins } = data
   // const colours = await getBasicDataFromAirtable('colours')
 
   const filterSchema = [
@@ -199,6 +197,7 @@ export const updateListFilter = (filters: IFilter[], filterIndex: number, option
   return newFilters
 }
 
+//builds a prisma where from a filter array:
 export const filterArrayToPrismaWhere = (filterArray: IFilter[]): Prisma.cultivarWhereInput => {
   const ret: Prisma.cultivarWhereInput = {}
   ret.AND = []

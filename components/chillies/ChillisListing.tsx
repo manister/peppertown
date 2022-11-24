@@ -5,12 +5,12 @@ import ChilliCard from './ChilliCard'
 import ChilliFilters from './ChilliFilters'
 
 import Container from '~/components/layout/Container'
-import { schemaMarkupFromListOfChillies } from '~/lib/schemaMarkup'
+import { schemaMarkupFromListOfChillies } from '~/lib/calculations/schemaMarkup'
 import HighlightText from '~/components/global/HighlightText'
 import SchemaMarkup from '~/components/global/SchemaMarkup'
 
 import LinkTo from '~/components/global/LinkTo'
-import { pathToPathsAndSortAndPage } from '~/lib/dataHelpers'
+import { pathToPathsAndSortAndPage } from '~/lib/calculations/helpers'
 
 interface Props {
   chillies: ICultivar[]

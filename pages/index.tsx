@@ -5,19 +5,19 @@ import ChilliListing from '~/components/chillies/ChillisListing'
 import Layout from '~/components/layout/Layout'
 import Head from 'next/head'
 
-import { shuffle } from '~/lib/dataHelpers'
+import { shuffle } from '~/lib/calculations/helpers'
 import LinkTo from '~/components/global/LinkTo'
 import Button from '~/components/global/Button'
 import Container from '~/components/layout/Container'
 import Banner from '~/components/global/Banner'
-import { getChilliData } from '~/lib/chilliData'
+import { getAllCultivars } from '~/lib/actions/db-actions'
 
 interface Props {
   chillies: ICultivar[]
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  const chillies = await getChilliData()
+  const chillies = await getAllCultivars()
   const todaysChillies = shuffle(chillies).slice(0, 8)
   return {
     props: { chillies: todaysChillies },

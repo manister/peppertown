@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 import FilterButton from './FilterButton'
 
 interface Props {
-  filter: IFilterRange
+  filter: IFilterSimpleRange | IFilterDoubleRange
   sliderChange: (value: number | number[]) => void
   minChange: (value: number) => void
   maxChange: (value: number) => void

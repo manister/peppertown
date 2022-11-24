@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { getChilliCount } from '~/lib/chilliData'
+import { getCultivarCount } from '~/lib/actions/db-actions'
+import { filterArrayToPrismaWhere } from '~/lib/calculations/filters'
 
 /* simple API route that accepts
 a POST req where the body is an array of 
@@ -13,8 +14,9 @@ const getCount = async (req: NextApiRequest, res: NextApiResponse): Promise<void
     return
   }
   try {
-    const body = JSON.parse(req.body) as IFilter[]
-    const count = await getChilliCount({ filters: body })
+    const body: IFilter[] = JSON.parse(req.body)
+    const where = filterArrayToPrismaWhere(body)
+    const count = await getCultivarCount({ where })
     res.status(200).json(count)
   } catch (e) {
     console.error(e)

@@ -10,12 +10,12 @@ import FullChilliProfile from '~/components/chillies/FullChilliProfile'
 import Layout from '~/components/layout/Layout'
 import LinkTo from '~/components/global/LinkTo'
 
-import { getChilliPageDataFromPaths } from '~/lib/pageData/[...paths]'
+import { getChilliPageDataFromPaths } from '~/lib/actions/pageData/[...paths]'
 
 import ReactMarkdown from 'react-markdown'
 import Breadcrumbs from '~/components/global/Breadcrumbs'
 import Banner from '~/components/global/Banner'
-import { PrismaClient } from '@prisma/client'
+import { getAllCultivars, getAllOrigins, getAllSpecies } from '~/lib/actions/db-actions'
 
 type Props = ICultivarPageData
 
@@ -24,11 +24,10 @@ interface IParams extends ParsedUrlQuery {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const prisma = new PrismaClient()
   const data = {
-    cultivars: await prisma.cultivar.findMany(),
-    origin: await prisma.origin.findMany(),
-    species: await prisma.species.findMany(),
+    cultivars: await getAllCultivars(),
+    origin: await getAllOrigins(),
+    species: await getAllSpecies(),
   }
 
   const paths = Object.entries(data).flatMap(([key, items]) => {

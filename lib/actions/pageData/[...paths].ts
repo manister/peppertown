@@ -1,9 +1,16 @@
-import { chunk, pathToPathsAndSortAndPage } from '../dataHelpers'
-import { getFilterSchema, pathArrayToFilterArray } from '../filters'
+import { chunk, pathToPathsAndSortAndPage } from '../../calculations/helpers'
+import { dataToFilterSchema, filterArrayToPrismaWhere, pathArrayToFilterArray } from '../../calculations/filters'
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
-import { getChilliCount, getChilliData, getRelatedChillies, getSingleChilli } from '~/lib/chilliData'
+import {
+  getAllOrigins,
+  getAllSpecies,
+  getCultivarCount,
+  getCultivars,
+  getRelatedCultivars,
+  getSingleCultivar,
+} from '~/lib/actions/db-actions'
 
 const getStaticPageContent = (paths: string[]): ICultivarPageData['pageContent'] => {
   //@TODO: make getting the page data into a standalone function
@@ -44,7 +51,8 @@ export const getChilliPageDataFromPaths = async (rawPaths: string[]): Promise<IC
   let relatedChillies: ICultivar[] = []
   let requestType: ICultivarPageData['requestType'] = null
   let count = 0
-  const schema = await getFilterSchema()
+  const data = { species: await getAllSpecies(), origins: await getAllOrigins() }
+  const schema = await dataToFilterSchema(data)
   let filters: IFilter[] | null = null
   const pageContent = getStaticPageContent(rawPaths)
 
@@ -55,17 +63,17 @@ export const getChilliPageDataFromPaths = async (rawPaths: string[]): Promise<IC
       //no paths, load all chillies
       requestType = 'listing'
       filters = pathArrayToFilterArray([], schema)
-      chillies = await getChilliData({ page })
-      count = await getChilliCount()
+      chillies = await getCultivars({ page })
+      count = await getCultivarCount()
     } else if (paths.length == 2 && paths[0] === 'cultivars') {
       //this is a handle page
       requestType = 'handle'
       const handle = paths[1] as string
 
-      const chilli = await getSingleChilli(handle)
+      const chilli = await getSingleCultivar(handle)
       chillies = [chilli]
 
-      relatedChillies = await getRelatedChillies(chilli, 4)
+      relatedChillies = await getRelatedCultivars(chilli, 4)
 
       //try and get at least 4 related chillies
     } else if (paths.length > 1) {
@@ -75,8 +83,9 @@ export const getChilliPageDataFromPaths = async (rawPaths: string[]): Promise<IC
 
       if (filters) {
         requestType = 'listing'
-        const data = await getChilliData({ filters, page, ...(sort ? { sort } : {}) })
-        count = await getChilliCount({ filters })
+        const where = filterArrayToPrismaWhere(filters)
+        const data = await getCultivars({ where, page, ...(sort ? { sort } : {}) })
+        count = await getCultivarCount({ where })
 
         chillies = data
       }

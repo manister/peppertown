@@ -1,6 +1,6 @@
 import SchemaMarkup from '~/components/global/SchemaMarkup'
 import Container from '~/components/layout/Container'
-import { schemaMarkupBreadcrumbsFromLinks } from '~/lib/schemaMarkup'
+import { schemaMarkupBreadcrumbsFromLinks } from '~/lib/calculations/schemaMarkup'
 import LinkTo from './LinkTo'
 
 interface Props {
