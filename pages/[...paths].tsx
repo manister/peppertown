@@ -5,12 +5,12 @@ import Head from 'next/head'
 import { ParsedUrlQuery } from 'querystring'
 import React from 'react'
 
-import ChilliListing from '~/components/chillies/ChillisListing'
-import FullChilliProfile from '~/components/chillies/FullChilliProfile'
+import CultivarListing from '~/components/cultivars/CultivarListing'
+import FullCultivarProfile from '~/components/cultivars/FullCultivarProfile'
 import Layout from '~/components/layout/Layout'
 import LinkTo from '~/components/global/LinkTo'
 
-import { getChilliPageDataFromPaths } from '~/lib/actions/pageData/[...paths]'
+import { getCultivarPageDataFromPaths } from '~/lib/actions/pageData/[...paths]'
 
 import ReactMarkdown from 'react-markdown'
 import Breadcrumbs from '~/components/global/Breadcrumbs'
@@ -40,25 +40,27 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   const { paths } = params as IParams
-  const { chillies, requestType, page, sort, filters, pageContent, relatedChillies, count } = await getChilliPageDataFromPaths(paths ?? [])
+  const { cultivars, requestType, page, sort, filters, pageContent, relatedCultivars, count } = await getCultivarPageDataFromPaths(
+    paths ?? []
+  )
 
   return {
     props: {
-      chillies,
+      cultivars,
       requestType,
       count,
       page,
       sort,
       filters,
       pageContent,
-      relatedChillies,
+      relatedCultivars,
     },
-    notFound: !chillies || chillies.length < 1,
+    notFound: !cultivars || cultivars.length < 1,
     revalidate: false,
   }
 }
 
-const ChilliPage = ({ chillies, requestType, count, page, sort, filters, pageContent, relatedChillies }: Props): JSX.Element => {
+const CultivarPage = ({ cultivars, requestType, count, page, sort, filters, pageContent, relatedCultivars }: Props): JSX.Element => {
   if (requestType === 'listing') {
     return (
       <Layout>
@@ -93,26 +95,26 @@ const ChilliPage = ({ chillies, requestType, count, page, sort, filters, pageCon
           ]}
         />
 
-        <ChilliListing {...(filters ? { filters } : {})} chillies={chillies} count={count} page={page} sort={sort} />
+        <CultivarListing {...(filters ? { filters } : {})} cultivars={cultivars} count={count} page={page} sort={sort} />
       </Layout>
     )
-  } else if (requestType === 'handle' && chillies.length > 0) {
-    const chilli = chillies[0]
-    if (!chilli) return <></>
+  } else if (requestType === 'handle' && cultivars.length > 0) {
+    const cultivar = cultivars[0]
+    if (!cultivar) return <></>
     return (
       <Layout>
         <Head>
-          <title>{chilli.name}</title>
-          <meta name="description" content={`All about ${chilli.name}, a cultivar of Capsicum ${chilli.species?.name}`} />
+          <title>{cultivar.name}</title>
+          <meta name="description" content={`All about ${cultivar.name}, a cultivar of Capsicum ${cultivar.species?.name}`} />
         </Head>
         <Breadcrumbs
           links={[
             { title: 'Home', link: '/' },
             { title: 'Cultivars', link: '/cultivars' },
-            { title: chilli.name, link: `/cultivars/${chilli.handle}` },
+            { title: cultivar.name, link: `/cultivars/${cultivar.handle}` },
           ]}
         />
-        <FullChilliProfile chilli={chilli} relatedChillies={relatedChillies} />
+        <FullCultivarProfile cultivar={cultivar} relatedCultivars={relatedCultivars} />
       </Layout>
     )
   }
@@ -120,4 +122,4 @@ const ChilliPage = ({ chillies, requestType, count, page, sort, filters, pageCon
   return <></>
 }
 
-export default ChilliPage
+export default CultivarPage

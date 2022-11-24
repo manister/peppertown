@@ -1,7 +1,7 @@
 import { GetStaticProps } from 'next'
 
 import React from 'react'
-import ChilliListing from '~/components/chillies/ChillisListing'
+import CultivarListing from '~/components/cultivars/CultivarListing'
 import Layout from '~/components/layout/Layout'
 import Head from 'next/head'
 
@@ -13,14 +13,14 @@ import Banner from '~/components/global/Banner'
 import { getAllCultivars } from '~/lib/actions/db-actions'
 
 interface Props {
-  chillies: ICultivar[]
+  cultivars: ICultivar[]
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  const chillies = await getAllCultivars()
-  const todaysChillies = shuffle(chillies).slice(0, 8)
+  const cultivars = await getAllCultivars()
+  const todaysCultivars = shuffle(cultivars).slice(0, 8)
   return {
-    props: { chillies: todaysChillies },
+    props: { cultivars: todaysCultivars },
     revalidate: 86400,
   }
 }
@@ -47,7 +47,7 @@ const HomePage: React.FunctionComponent<Props> = (props) => (
     <section className="py-10">
       <Container>
         <h2 className="mb-10 text-3xl font-bold bg-blue-700 text-white p-3 inline-block">Featured Chilli Peppers</h2>
-        <ChilliListing chillies={props.chillies} />
+        <CultivarListing cultivars={props.cultivars} />
         <section className="prose mx-auto px-2"></section>
         <div className="text-center py-2">
           <Button variant="primary">

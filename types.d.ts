@@ -154,8 +154,8 @@ interface IAppContext {
 //page data
 
 type ICultivarPageData = {
-  chillies: ICultivar[]
-  relatedChillies: ICultivar[]
+  cultivars: ICultivar[]
+  relatedCultivars: ICultivar[]
   requestType: 'listing' | 'handle' | null
   filters: IFilter[] | null
   count: number

@@ -15,16 +15,16 @@ interface Opts {
 const prisma = new PrismaClient()
 
 export const getSingleCultivar = async (handle: string): Promise<ICultivar> => {
-  const chilli = await prisma.cultivar.findUnique({
+  const cultivar = await prisma.cultivar.findUnique({
     where: {
       handle,
     },
     select: prismaCultivarSelects,
   })
-  if (chilli) {
-    return chilli
+  if (cultivar) {
+    return cultivar
   } else {
-    throw new Error(`Cannot find chilli with handle "${handle}"`)
+    throw new Error(`Cannot find cultivar with handle "${handle}"`)
   }
 }
 

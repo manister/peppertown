@@ -2,13 +2,13 @@ import React from 'react'
 import Emoji from '~/components/global/Emoji'
 import HighlightText from '~/components/global/HighlightText'
 
-interface ChilliDetailSectionProps {
+interface CultivarDetailSectionProps {
   emoji: string
   label: string
   children: React.ReactNode
 }
 
-const ChilliDetailSection = (props: ChilliDetailSectionProps): JSX.Element => {
+const CultivarDetailSection = (props: CultivarDetailSectionProps): JSX.Element => {
   const { emoji, children, label } = props
   return (
     <>
@@ -22,21 +22,21 @@ const ChilliDetailSection = (props: ChilliDetailSectionProps): JSX.Element => {
   )
 }
 
-const ChilliDetails = (props: ICultivar): JSX.Element => {
+const CultivarDetails = (props: ICultivar): JSX.Element => {
   const { scovilleMax, scovilleMin, species, origin } = props
 
   return (
     <>
       <div className="text-slate-600">
-        <ChilliDetailSection label="Heat:" emoji="🔥">
+        <CultivarDetailSection label="Heat:" emoji="🔥">
           <span className="font-bold">
             {scovilleMin} - {scovilleMax} SHU
           </span>
-        </ChilliDetailSection>
+        </CultivarDetailSection>
 
         {species && (
           //Make into component for species list
-          <ChilliDetailSection label="Species:" emoji="🍃">
+          <CultivarDetailSection label="Species:" emoji="🍃">
             <HighlightText
               href={`species/${species.handle}`}
               className={`
@@ -47,22 +47,22 @@ const ChilliDetails = (props: ICultivar): JSX.Element => {
             >
               {species.name}
             </HighlightText>
-          </ChilliDetailSection>
+          </CultivarDetailSection>
         )}
 
         {origin && (
           //Make into component for species list
-          <ChilliDetailSection emoji="🌐" label="Origins:">
+          <CultivarDetailSection emoji="🌐" label="Origins:">
             <React.Fragment key={origin.handle}>
               <HighlightText className="bg-gray-700" href={`origin/${origin.handle}`}>
                 {origin.name}
               </HighlightText>
             </React.Fragment>
-          </ChilliDetailSection>
+          </CultivarDetailSection>
         )}
       </div>
     </>
   )
 }
 
-export default ChilliDetails
+export default CultivarDetails

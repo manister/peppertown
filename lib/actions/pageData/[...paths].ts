@@ -20,7 +20,7 @@ const getStaticPageContent = (paths: string[]): ICultivarPageData['pageContent']
     content: '',
     image: {
       src: 'page-chilli-placeholder.jpg',
-      alt: 'Many red chillies',
+      alt: 'Many red cultivars',
     },
   }
   if (paths?.length === 2) {
@@ -46,9 +46,9 @@ const getStaticPageContent = (paths: string[]): ICultivarPageData['pageContent']
   return pageContent
 }
 
-export const getChilliPageDataFromPaths = async (rawPaths: string[]): Promise<ICultivarPageData> => {
-  let chillies: ICultivar[] = []
-  let relatedChillies: ICultivar[] = []
+export const getCultivarPageDataFromPaths = async (rawPaths: string[]): Promise<ICultivarPageData> => {
+  let cultivars: ICultivar[] = []
+  let relatedCultivars: ICultivar[] = []
   let requestType: ICultivarPageData['requestType'] = null
   let count = 0
   const data = { species: await getAllSpecies(), origins: await getAllOrigins() }
@@ -60,22 +60,22 @@ export const getChilliPageDataFromPaths = async (rawPaths: string[]): Promise<IC
 
   try {
     if (paths.length === 1 && paths[0] === 'cultivars') {
-      //no paths, load all chillies
+      //no paths, load all cultivars
       requestType = 'listing'
       filters = pathArrayToFilterArray([], schema)
-      chillies = await getCultivars({ page })
+      cultivars = await getCultivars({ page })
       count = await getCultivarCount()
     } else if (paths.length == 2 && paths[0] === 'cultivars') {
       //this is a handle page
       requestType = 'handle'
       const handle = paths[1] as string
 
-      const chilli = await getSingleCultivar(handle)
-      chillies = [chilli]
+      const cultivar = await getSingleCultivar(handle)
+      cultivars = [cultivar]
 
-      relatedChillies = await getRelatedCultivars(chilli, 4)
+      relatedCultivars = await getRelatedCultivars(cultivar, 4)
 
-      //try and get at least 4 related chillies
+      //try and get at least 4 related cultivars
     } else if (paths.length > 1) {
       const filterPaths = chunk(paths)
 
@@ -87,11 +87,11 @@ export const getChilliPageDataFromPaths = async (rawPaths: string[]): Promise<IC
         const data = await getCultivars({ where, page, ...(sort ? { sort } : {}) })
         count = await getCultivarCount({ where })
 
-        chillies = data
+        cultivars = data
       }
     }
   } catch (e) {
     console.error({ error: e })
   }
-  return { chillies, requestType, filters, count, page, sort, pageContent, relatedChillies: relatedChillies }
+  return { cultivars, requestType, filters, count, page, sort, pageContent, relatedCultivars: relatedCultivars }
 }

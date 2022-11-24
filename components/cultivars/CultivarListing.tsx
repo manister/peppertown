@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useRouter } from 'next/router'
 import Emoji from '../global/Emoji'
-import ChilliCard from './ChilliCard'
-import ChilliFilters from './ChilliFilters'
+import CultivarCard from './CultivarCard'
+import CultivarFilters from './CultivarFilters'
 
 import Container from '~/components/layout/Container'
-import { schemaMarkupFromListOfChillies } from '~/lib/calculations/schemaMarkup'
+import { schemaMarkupFromListOfCultivars } from '~/lib/calculations/schemaMarkup'
 import HighlightText from '~/components/global/HighlightText'
 import SchemaMarkup from '~/components/global/SchemaMarkup'
 
@@ -13,21 +13,21 @@ import LinkTo from '~/components/global/LinkTo'
 import { pathToPathsAndSortAndPage } from '~/lib/calculations/helpers'
 
 interface Props {
-  chillies: ICultivar[]
+  cultivars: ICultivar[]
   count?: number
   page?: number
   sort?: TSort
   filters?: IFilter[]
 }
 
-const ChilliListing = (props: Props): JSX.Element => {
-  const { chillies, filters, page, count } = props
+const CultivarListing = (props: Props): JSX.Element => {
+  const { cultivars, filters, page, count } = props
 
   const [filtersOpen, setFiltersOpen] = useState(false)
 
   const { asPath, query, push } = useRouter()
 
-  const structuredData = schemaMarkupFromListOfChillies(chillies, asPath)
+  const structuredData = schemaMarkupFromListOfCultivars(cultivars, asPath)
 
   const totalPages = count ? Math.ceil(count / 12) : 1
 
@@ -71,11 +71,11 @@ const ChilliListing = (props: Props): JSX.Element => {
         </div>
       )}
 
-      {filters && <ChilliFilters setOpen={(val) => setFiltersOpen(val)} open={filtersOpen} filters={filters} />}
+      {filters && <CultivarFilters setOpen={(val) => setFiltersOpen(val)} open={filtersOpen} filters={filters} />}
       <ul className="flex flex-wrap">
-        {chillies.map((chilli) => (
-          <li className="xs:w-1/1 sm:w-1/2 md:w-1/3 xl:w-1/4 mb-6 px-2" key={chilli.handle}>
-            <ChilliCard {...chilli} />
+        {cultivars.map((cultivar) => (
+          <li className="xs:w-1/1 sm:w-1/2 md:w-1/3 xl:w-1/4 mb-6 px-2" key={cultivar.handle}>
+            <CultivarCard {...cultivar} />
           </li>
         ))}
       </ul>
@@ -98,4 +98,4 @@ const ChilliListing = (props: Props): JSX.Element => {
   )
 }
 
-export default ChilliListing
+export default CultivarListing

@@ -1,11 +1,11 @@
 import React from 'react'
 import HighlightText from '~/components/global/HighlightText'
 import ImageWithCredit from '~/components/global/ImageWithCredit'
-import ChilliDetails from './ChilliDetails'
+import CultivarDetails from './CultivarDetails'
 
 // import { useGlobalState } from '~/state/context'
 
-const ChilliCard = (props: ICultivar): JSX.Element => {
+const CultivarCard = (props: ICultivar): JSX.Element => {
   const { image, name, handle } = props
   const defaultImage = image
   const alt = defaultImage?.alt ?? 'No image available'
@@ -31,9 +31,9 @@ const ChilliCard = (props: ICultivar): JSX.Element => {
           <h2>{name}</h2>
         </HighlightText>
 
-        <ChilliDetails {...props} />
+        <CultivarDetails {...props} />
       </div>
     </div>
   )
 }
-export default ChilliCard
+export default CultivarCard

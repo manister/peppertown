@@ -5,7 +5,7 @@ import { filterArrayToPrismaWhere } from '~/lib/calculations/filters'
 /* simple API route that accepts
 a POST req where the body is an array of 
 filters and returns the total
-number of chillies that the
+number of cultivars that the
 array of filters would return */
 
 const getCount = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
