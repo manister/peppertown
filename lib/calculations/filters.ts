@@ -35,6 +35,7 @@ export const dataToFilterSchema = async (data: { species: ISpecies[]; origins: I
     //   displayName: 'Colours',
     //   displayType: 'text',
     //   values: airtableDataToTextFilter(colours),
+    //
     // },
     {
       type: 'doublerange',
