@@ -38,6 +38,7 @@ interface IOrigin {
 
 interface IState {
   wishlist: Set<string>
+  config: IConfig | null
 }
 
 interface IFilterBaseValue {
@@ -138,17 +139,28 @@ interface IActionRemoveFromWishlist {
   payload: string
 }
 
-type IAction = IActionIncrementCount | IActionSetCount
+interface IActionSetConfig {
+  type: 'SET_CONFIG'
+  payload: IConfig
+}
+
+type IAction = IActionIncrementCount | IActionSetCount | IActionSetConfig
 
 type TSort = { dir: 'asc' | 'desc'; by: string } | null
 
 interface IAppContext {
   state: IState
   actions: {
+    setConfig: (config: IConfig) => void
     addToWishlist: (handle: string) => void
     removeFromWishlist: (handle: string) => void
     hydrate: (handles: string[]) => void
   }
+}
+
+interface IPaginationItem {
+  pageNo: number
+  url: string
 }
 
 //page data
@@ -161,6 +173,7 @@ type ICultivarPageData = {
   count: number
   sort: TSort
   page: number
+  pagination: IPaginationItem[]
   pageContent: {
     title: string
     description: string
@@ -170,4 +183,16 @@ type ICultivarPageData = {
       alt: sring
     }
   }
+}
+
+//config
+interface ISortKeyValue {
+  text: string
+  column: string
+  urlKey: string
+  objectKey: string
+}
+interface IConfig {
+  sortKeys: ISortKeyValue[]
+  perPage: number
 }

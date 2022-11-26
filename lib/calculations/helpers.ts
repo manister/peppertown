@@ -20,13 +20,10 @@ export enum EnumAllowedSorts {
   desc = 'desc',
 }
 
-export enum EnumSortKeys {
-  scoville_max = 'scovilleMax',
-  scoville_min = 'scovilleMin',
-  name = 'name',
-}
-
-export const pathToPathsAndSortAndPage = (paths: string[]): { paths: string[]; sort: TSort; page: number } => {
+export const pathToPathsAndSortAndPage = (
+  paths: string[],
+  sortKeys: IConfig['sortKeys']
+): { paths: string[]; sort: TSort; page: number } => {
   const last = paths[paths.length - 1]
   const secondLast = paths[paths.length - 2]
   const pageNo = last ? parseInt(last) : NaN
@@ -43,11 +40,15 @@ export const pathToPathsAndSortAndPage = (paths: string[]): { paths: string[]; s
   if (hasSort) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_s, by, dir] = sortPath.split(':')
-    if (by && by in EnumSortKeys) {
-      if (dir && dir in EnumAllowedSorts) {
-        sort = { by: EnumSortKeys[<keyof typeof EnumSortKeys>by], dir: <EnumAllowedSorts>dir }
-      } else {
-        sort = { by: EnumSortKeys[<keyof typeof EnumSortKeys>by], dir: 'asc' }
+
+    if (by) {
+      const sortKey = sortKeys.find((item) => item.urlKey === by)
+      if (sortKey) {
+        if (dir && dir in EnumAllowedSorts) {
+          sort = { by: sortKey.objectKey, dir: <EnumAllowedSorts>dir }
+        } else {
+          sort = { by: sortKey.objectKey, dir: 'asc' }
+        }
       }
     }
   }

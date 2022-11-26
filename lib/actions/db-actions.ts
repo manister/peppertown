@@ -108,3 +108,13 @@ export const getAllSpecies = async (): Promise<ISpecies[]> => {
 export const getAllOrigins = async (): Promise<IOrigin[]> => {
   return await prisma.origin.findMany()
 }
+
+export const getConfig = async (): Promise<IConfig> => {
+  const configs = await prisma.config.findMany()
+  return configs.reduce((acc, item) => {
+    return {
+      ...acc,
+      [item.key]: item.value,
+    }
+  }, {} as IConfig)
+}

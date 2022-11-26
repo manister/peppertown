@@ -10,10 +10,10 @@ import HighlightText from '~/components/global/HighlightText'
 import SchemaMarkup from '~/components/global/SchemaMarkup'
 
 import LinkTo from '~/components/global/LinkTo'
-import { pathToPathsAndSortAndPage } from '~/lib/calculations/helpers'
 
 interface Props {
   cultivars: ICultivar[]
+  pagination?: IPaginationItem[]
   count?: number
   page?: number
   sort?: TSort
@@ -21,17 +21,15 @@ interface Props {
 }
 
 const CultivarListing = (props: Props): JSX.Element => {
-  const { cultivars, filters, page, count } = props
+  const { cultivars, filters, page, count, pagination } = props
 
   const [filtersOpen, setFiltersOpen] = useState(false)
 
-  const { asPath, query, push } = useRouter()
+  const { asPath } = useRouter()
 
   const structuredData = schemaMarkupFromListOfCultivars(cultivars, asPath)
 
-  const totalPages = count ? Math.ceil(count / 12) : 1
-
-  const { paths } = pathToPathsAndSortAndPage(Array.isArray(query.paths) ? query.paths : [])
+  const totalPages = pagination?.length ?? 1
 
   return (
     <Container>
@@ -80,15 +78,11 @@ const CultivarListing = (props: Props): JSX.Element => {
         ))}
       </ul>
       <ul className="flex justify-center mb-3">
-        {totalPages > 1
-          ? Array.from({ length: totalPages }, (_i, n) => n + 1).map((pageNo) => {
+        {pagination && pagination.length > 1
+          ? pagination.map(({ pageNo, url }) => {
               return (
                 <li className="mx-1" key={pageNo}>
-                  {pageNo === page ? (
-                    <span className="underline">{pageNo}</span>
-                  ) : (
-                    <LinkTo href={`${paths.join('/')}/${pageNo}`}>{pageNo}</LinkTo>
-                  )}
+                  {pageNo === page ? <span className="underline">{pageNo}</span> : <LinkTo href={url}>{pageNo}</LinkTo>}
                 </li>
               )
             })
