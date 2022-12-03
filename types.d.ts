@@ -38,7 +38,6 @@ interface IOrigin {
 
 interface IState {
   wishlist: Set<string>
-  config: IConfig | null
 }
 
 interface IFilterBaseValue {
@@ -139,19 +138,13 @@ interface IActionRemoveFromWishlist {
   payload: string
 }
 
-interface IActionSetConfig {
-  type: 'SET_CONFIG'
-  payload: IConfig
-}
-
-type IAction = IActionIncrementCount | IActionSetCount | IActionSetConfig
+type IAction = IActionIncrementCount | IActionSetCount
 
 type TSort = { dir: 'asc' | 'desc'; by: string } | null
 
 interface IAppContext {
   state: IState
   actions: {
-    setConfig: (config: IConfig) => void
     addToWishlist: (handle: string) => void
     removeFromWishlist: (handle: string) => void
     hydrate: (handles: string[]) => void
