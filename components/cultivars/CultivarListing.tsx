@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Emoji from '../global/Emoji'
 import CultivarCard from './CultivarCard'
@@ -18,18 +18,38 @@ interface Props {
   page?: number
   sort?: TSort
   filters?: IFilter[]
+  sortKeys?: ISortKeyValue[]
 }
 
 const CultivarListing = (props: Props): JSX.Element => {
-  const { cultivars, filters, page, count, pagination } = props
+  const { cultivars, filters, page, count, pagination, sort, sortKeys } = props
 
   const [filtersOpen, setFiltersOpen] = useState(false)
 
-  const { asPath } = useRouter()
+  const { asPath, push } = useRouter()
 
   const structuredData = schemaMarkupFromListOfCultivars(cultivars, asPath)
 
   const totalPages = pagination?.length ?? 1
+
+  //@TODO create helper function that takes sortkeys, url and sort and returns new url with new sort!
+  const updateUrlWithNewSort = (sortValue: TSort): void => {
+    const urlWithoutSort = asPath.split('sort:')[0]
+    const thisSortKey = sortKeys?.find((sortKey) => sortKey.objectKey === sortValue.by)
+    if (thisSortKey) {
+      const urlWithSort = `${urlWithoutSort}/sort:${thisSortKey.urlKey}:${sortValue.dir}`
+      push(urlWithSort)
+    }
+  }
+
+  const [selectedSortKey, setSelectedSortKey] = useState(sort)
+
+  useEffect(() => {
+    if (selectedSortKey) {
+      updateUrlWithNewSort(selectedSortKey)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSortKey])
 
   return (
     <Container>
@@ -47,10 +67,25 @@ const CultivarListing = (props: Props): JSX.Element => {
               </span>{' '}
               Filters
             </button>
-            {/* Sort by @TODO! 
-            <select onChange={push()}>
+            {sortKeys ? (
+              <div>
+                <select value={JSON.stringify(selectedSortKey)} onChange={(e) => setSelectedSortKey(JSON.parse(e.target.value))}>
+                  {sortKeys.flatMap((sortKey) =>
+                    sortKey.dirs.map((dir) => {
+                      const thisSort = { by: sortKey.objectKey, dir: dir.key }
 
-            </select> */}
+                      return (
+                        <option key={`${sortKey.column}=${dir.key}`} value={JSON.stringify(thisSort)}>
+                          {dir.text}
+                        </option>
+                      )
+                    })
+                  )}
+                </select>
+              </div>
+            ) : (
+              ''
+            )}
           </div>
           {typeof count !== 'undefined' && !isNaN(count) ? (
             <div>

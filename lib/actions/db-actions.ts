@@ -3,13 +3,13 @@ import { prismaCultivarSelects } from '~/lib/data/db-data'
 import { Prisma, PrismaClient } from '@prisma/client'
 
 interface Opts {
-  where?: Prisma.cultivarWhereInput
-  page?: number
-  paginate?: number
-  sort?: {
+  where: Prisma.cultivarWhereInput
+  page: number
+  paginate: number
+  sort: {
     by: string
     dir: 'asc' | 'desc'
-  }
+  } | null
 }
 
 const prisma = new PrismaClient()
@@ -69,7 +69,7 @@ export const getRelatedCultivars = async (cultivar: ICultivar, n: number): Promi
   return [...fullMatches, ...originMatches, ...speciesMatches]
 }
 
-export const getCultivarCount = async (opts?: Opts): Promise<number> => {
+export const getCultivarCount = async (opts?: { where: Prisma.cultivarWhereInput }): Promise<number> => {
   const number = await prisma.cultivar.count({
     ...(opts?.where ? { where: opts.where } : {}),
   })
@@ -77,8 +77,8 @@ export const getCultivarCount = async (opts?: Opts): Promise<number> => {
 }
 
 //@TODO generalise this with getAll below
-export const getCultivars = async (opts?: Opts): Promise<ICultivar[]> => {
-  const take = opts?.paginate ?? 12
+export const getCultivars = async (opts: Opts): Promise<ICultivar[]> => {
+  const take = opts.paginate
   const skip = opts?.page ? (opts.page - 1) * take : 0
   const orderBy = opts?.sort
     ? {

@@ -20,10 +20,7 @@ export enum EnumAllowedSorts {
   desc = 'desc',
 }
 
-export const pathToPathsAndSortAndPage = (
-  paths: string[],
-  sortKeys: IConfig['sortKeys']
-): { paths: string[]; sort: TSort; page: number } => {
+export const pathToPathsAndSortAndPage = (paths: string[], sortKeys: ISortKeyValue[]): { paths: string[]; sort: TSort; page: number } => {
   const last = paths[paths.length - 1]
   const secondLast = paths[paths.length - 2]
   const pageNo = last ? parseInt(last) : NaN
@@ -31,7 +28,7 @@ export const pathToPathsAndSortAndPage = (
   const sortPath = hasPage ? secondLast : last
   const hasSort = sortPath && sortPath.includes('sort:')
   let page = 1
-  let sort: TSort = null
+  let sort: TSort = { dir: 'asc', by: sortKeys[0]?.objectKey ?? 'name' }
 
   if (hasPage) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

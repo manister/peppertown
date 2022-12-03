@@ -70,7 +70,7 @@ export const getCultivarPageDataFromPaths = async (rawPaths: string[]): Promise<
       //no paths, load all cultivars
       requestType = 'listing'
       filters = pathArrayToFilterArray([], schema)
-      cultivars = await getCultivars({ page, paginate: config.perPage })
+      cultivars = await getCultivars({ page, paginate: config.perPage, sort, where: {} })
       count = await getCultivarCount()
       const totalPages = Math.ceil(count / config.perPage)
       pagination = Array.from({ length: totalPages }, (_i, n) => n + 1).map((pageNo) => {
@@ -97,7 +97,7 @@ export const getCultivarPageDataFromPaths = async (rawPaths: string[]): Promise<
       if (filters) {
         requestType = 'listing'
         const where = filterArrayToPrismaWhere(filters)
-        const data = await getCultivars({ where, page, ...(sort ? { sort } : {}) })
+        const data = await getCultivars({ where, page, sort, paginate: config.perPage })
         count = await getCultivarCount({ where })
         const totalPages = Math.ceil(count / config.perPage)
 
@@ -113,5 +113,5 @@ export const getCultivarPageDataFromPaths = async (rawPaths: string[]): Promise<
   } catch (e) {
     console.error({ error: e })
   }
-  return { cultivars, requestType, filters, count, page, sort, pageContent, relatedCultivars, pagination }
+  return { cultivars, requestType, filters, count, page, sort, pageContent, relatedCultivars, pagination, sortKeys: config.sortKeys }
 }
