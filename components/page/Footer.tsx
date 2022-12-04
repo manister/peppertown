@@ -53,7 +53,9 @@ const Footer = (props: Props): JSX.Element => {
           {navLinks.map((link) => (
             <li className="px-2" key={link.id}>
               <LinkTo className="whitespace-nowrap text-xs hover:underline" href={link.href}>
-                <Emoji src={link.emoji} /> {link.text}
+                <>
+                  <Emoji src={link.emoji} /> {link.text}
+                </>
               </LinkTo>
             </li>
           ))}

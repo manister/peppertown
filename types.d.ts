@@ -140,7 +140,7 @@ interface IActionRemoveFromWishlist {
 
 type IAction = IActionIncrementCount | IActionSetCount
 
-type TSort = { dir: 'asc' | 'desc'; by: string } | null
+type TSort = { dir: 'asc' | 'desc'; by: string }
 
 interface IAppContext {
   state: IState
@@ -149,6 +149,11 @@ interface IAppContext {
     removeFromWishlist: (handle: string) => void
     hydrate: (handles: string[]) => void
   }
+}
+
+interface IPaginationItem {
+  pageNo: number
+  url: string
 }
 
 //page data
@@ -160,7 +165,9 @@ type ICultivarPageData = {
   filters: IFilter[] | null
   count: number
   sort: TSort
+  sortKeys: ISortKeyValue[]
   page: number
+  pagination: IPaginationItem[]
   pageContent: {
     title: string
     description: string
@@ -170,4 +177,16 @@ type ICultivarPageData = {
       alt: sring
     }
   }
+}
+
+//config
+interface ISortKeyValue {
+  dirs: { key: 'asc' | 'desc'; text: string }[]
+  column: string
+  urlKey: string
+  objectKey: string
+}
+interface IConfig {
+  sortKeys: ISortKeyValue[]
+  perPage: number
 }

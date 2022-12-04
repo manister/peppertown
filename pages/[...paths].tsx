@@ -40,27 +40,27 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   const { paths } = params as IParams
-  const { cultivars, requestType, page, sort, filters, pageContent, relatedCultivars, count } = await getCultivarPageDataFromPaths(
-    paths ?? []
-  )
+  const props = await getCultivarPageDataFromPaths(paths ?? [])
 
   return {
-    props: {
-      cultivars,
-      requestType,
-      count,
-      page,
-      sort,
-      filters,
-      pageContent,
-      relatedCultivars,
-    },
-    notFound: !cultivars || cultivars.length < 1,
+    props,
+    notFound: !props.cultivars || props.cultivars.length < 1,
     revalidate: false,
   }
 }
 
-const CultivarPage = ({ cultivars, requestType, count, page, sort, filters, pageContent, relatedCultivars }: Props): JSX.Element => {
+const CultivarPage = ({
+  cultivars,
+  requestType,
+  count,
+  page,
+  sort,
+  filters,
+  pageContent,
+  relatedCultivars,
+  pagination,
+  sortKeys,
+}: Props): JSX.Element => {
   if (requestType === 'listing') {
     return (
       <Layout>
@@ -95,7 +95,15 @@ const CultivarPage = ({ cultivars, requestType, count, page, sort, filters, page
           ]}
         />
 
-        <CultivarListing {...(filters ? { filters } : {})} cultivars={cultivars} count={count} page={page} sort={sort} />
+        <CultivarListing
+          {...(filters ? { filters } : {})}
+          cultivars={cultivars}
+          count={count}
+          page={page}
+          sort={sort}
+          sortKeys={sortKeys}
+          pagination={pagination}
+        />
       </Layout>
     )
   } else if (requestType === 'handle' && cultivars.length > 0) {

@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getCultivarCount } from '~/lib/actions/db-actions'
-import { filterArrayToPrismaWhere } from '~/lib/calculations/filters'
+import { filterArrayToPrismaWhere } from '~/lib/calculations/filters-sort'
 
 /* simple API route that accepts
 a POST req where the body is an array of 

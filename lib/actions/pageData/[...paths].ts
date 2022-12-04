@@ -1,5 +1,5 @@
 import { chunk, pathToPathsAndSortAndPage } from '../../calculations/helpers'
-import { dataToFilterSchema, filterArrayToPrismaWhere, pathArrayToFilterArray } from '../../calculations/filters'
+import { dataToFilterSchema, filterArrayToPrismaWhere, pathArrayToFilterArray, sortToSortPath } from '../../calculations/filters-sort'
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
@@ -10,6 +10,7 @@ import {
   getCultivars,
   getRelatedCultivars,
   getSingleCultivar,
+  getConfig,
 } from '~/lib/actions/db-actions'
 
 const getStaticPageContent = (paths: string[]): ICultivarPageData['pageContent'] => {
@@ -46,7 +47,12 @@ const getStaticPageContent = (paths: string[]): ICultivarPageData['pageContent']
   return pageContent
 }
 
+//@TODO this whole thing needs simplifying and splitting up into different functions that
+// return differently, they can they be called depending on the page type
+// this whole thing is far too general
+// one function for listing, one function for handle page will do nicely
 export const getCultivarPageDataFromPaths = async (rawPaths: string[]): Promise<ICultivarPageData> => {
+  const config = await getConfig()
   let cultivars: ICultivar[] = []
   let relatedCultivars: ICultivar[] = []
   let requestType: ICultivarPageData['requestType'] = null
@@ -56,15 +62,23 @@ export const getCultivarPageDataFromPaths = async (rawPaths: string[]): Promise<
   let filters: IFilter[] | null = null
   const pageContent = getStaticPageContent(rawPaths)
 
-  const { sort, page, paths } = pathToPathsAndSortAndPage(rawPaths)
+  const { sort, page, paths } = pathToPathsAndSortAndPage(rawPaths, config.sortKeys)
 
+  let pagination: IPaginationItem[] = []
   try {
     if (paths.length === 1 && paths[0] === 'cultivars') {
       //no paths, load all cultivars
       requestType = 'listing'
       filters = pathArrayToFilterArray([], schema)
-      cultivars = await getCultivars({ page })
+      cultivars = await getCultivars({ page, paginate: config.perPage, sort, where: {} })
       count = await getCultivarCount()
+      const totalPages = Math.ceil(count / config.perPage)
+      pagination = Array.from({ length: totalPages }, (_i, n) => n + 1).map((pageNo) => {
+        return {
+          pageNo,
+          url: `${paths.join('/')}/${sortToSortPath(sort, config.sortKeys)}/${pageNo > 1 ? pageNo : ''}`,
+        }
+      })
     } else if (paths.length == 2 && paths[0] === 'cultivars') {
       //this is a handle page
       requestType = 'handle'
@@ -73,9 +87,8 @@ export const getCultivarPageDataFromPaths = async (rawPaths: string[]): Promise<
       const cultivar = await getSingleCultivar(handle)
       cultivars = [cultivar]
 
-      relatedCultivars = await getRelatedCultivars(cultivar, 4)
-
       //try and get at least 4 related cultivars
+      relatedCultivars = await getRelatedCultivars(cultivar, 4)
     } else if (paths.length > 1) {
       const filterPaths = chunk(paths)
 
@@ -84,14 +97,21 @@ export const getCultivarPageDataFromPaths = async (rawPaths: string[]): Promise<
       if (filters) {
         requestType = 'listing'
         const where = filterArrayToPrismaWhere(filters)
-        const data = await getCultivars({ where, page, ...(sort ? { sort } : {}) })
+        const data = await getCultivars({ where, page, sort, paginate: config.perPage })
         count = await getCultivarCount({ where })
+        const totalPages = Math.ceil(count / config.perPage)
 
+        pagination = Array.from({ length: totalPages }, (_i, n) => n + 1).map((pageNo) => {
+          return {
+            pageNo,
+            url: `${paths.join('/')}/${sortToSortPath(sort, config.sortKeys)}/${pageNo > 1 ? pageNo : ''}`,
+          }
+        })
         cultivars = data
       }
     }
   } catch (e) {
     console.error({ error: e })
   }
-  return { cultivars, requestType, filters, count, page, sort, pageContent, relatedCultivars: relatedCultivars }
+  return { cultivars, requestType, filters, count, page, sort, pageContent, relatedCultivars, pagination, sortKeys: config.sortKeys }
 }

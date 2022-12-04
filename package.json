@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "next",
-    "prebuild": "ts-node tools/assetUpload.ts",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "postbuild": "next-sitemap",
     "start": "next start",
     "export": "yarn build && next export",
@@ -47,6 +46,7 @@
   },
   "devDependencies": {
     "@netlify/plugin-a11y": "^1.0.0-beta.1",
+    "@tailwindcss/forms": "^0.5.3",
     "@tailwindcss/typography": "^0.5.7",
     "@types/node": "^18.7.16",
     "@types/nprogress": "^0.2.0",
