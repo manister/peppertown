@@ -53,3 +53,11 @@ export const pathToPathsAndSortAndPage = (paths: string[], sortKeys: ISortKeyVal
   const sliceAmount = hasPage && hasSort ? 2 : hasPage || hasSort ? 1 : 0
   return { paths: sliceAmount > 0 ? paths.slice(0, -sliceAmount) : paths, sort, page }
 }
+
+export const determineRequestType = (paths: string[]): 'listing' | 'cultivar' => {
+  if (paths.length == 2 && paths[0] === 'cultivars') {
+    //this is a handle page
+    return 'cultivar'
+  }
+  return 'listing'
+}

@@ -156,13 +156,9 @@ interface IPaginationItem {
   url: string
 }
 
-//page data
-
-type ICultivarPageData = {
+interface IListingPageData {
   cultivars: ICultivar[]
-  relatedCultivars: ICultivar[]
-  requestType: 'listing' | 'handle' | null
-  filters: IFilter[] | null
+  filters: IFilter[]
   count: number
   sort: TSort
   sortKeys: ISortKeyValue[]
@@ -177,6 +173,12 @@ type ICultivarPageData = {
       alt: sring
     }
   }
+}
+
+//page data
+interface ICultivarPageData {
+  cultivar: ICultivar
+  relatedCultivars: ICultivar[]
 }
 
 //config
