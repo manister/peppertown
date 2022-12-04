@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 
-import { filterArrayToPathArray, updateListFilter } from '~/lib/calculations/filters'
+import { filterArrayToPathArray, updateListFilter } from '~/lib/calculations/filters-sort'
 import { useDebounce } from 'use-debounce'
 import ListFilter from './CultivarFilters/ListFilter'
 import Button from '../global/Button'
@@ -9,11 +9,12 @@ import Button from '../global/Button'
 interface Props {
   open: boolean
   filters: IFilter[]
+  currentSortPath: string
   setOpen: (value: boolean) => void
 }
 
 const CultivarFilters = (props: Props): JSX.Element => {
-  const { filters, open, setOpen } = props
+  const { filters, open, setOpen, currentSortPath } = props
   const router = useRouter()
 
   const [currentFilters, setCurrentFilters] = useState(filters)
@@ -65,7 +66,7 @@ const CultivarFilters = (props: Props): JSX.Element => {
           onSubmit={(e) => {
             e.preventDefault()
             const filterPath = filterArrayToPathArray(currentFilters).flat().join('/')
-            router.push(filterPath ? filterPath : '/cutlivars')
+            router.push(`${filterPath ? filterPath : '/cultivars'}/${currentSortPath}`)
             setOpen(false)
           }}
         >

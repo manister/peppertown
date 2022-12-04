@@ -1,5 +1,5 @@
 import { chunk, pathToPathsAndSortAndPage } from '../../calculations/helpers'
-import { dataToFilterSchema, filterArrayToPrismaWhere, pathArrayToFilterArray } from '../../calculations/filters'
+import { dataToFilterSchema, filterArrayToPrismaWhere, pathArrayToFilterArray, sortToSortPath } from '../../calculations/filters-sort'
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
@@ -76,7 +76,7 @@ export const getCultivarPageDataFromPaths = async (rawPaths: string[]): Promise<
       pagination = Array.from({ length: totalPages }, (_i, n) => n + 1).map((pageNo) => {
         return {
           pageNo,
-          url: `${paths.join('/')}/${pageNo > 1 ? pageNo : ''}`,
+          url: `${paths.join('/')}/${sortToSortPath(sort, config.sortKeys)}/${pageNo > 1 ? pageNo : ''}`,
         }
       })
     } else if (paths.length == 2 && paths[0] === 'cultivars') {
@@ -104,7 +104,7 @@ export const getCultivarPageDataFromPaths = async (rawPaths: string[]): Promise<
         pagination = Array.from({ length: totalPages }, (_i, n) => n + 1).map((pageNo) => {
           return {
             pageNo,
-            url: `${paths.join('/')}/${pageNo > 1 ? pageNo : ''}`,
+            url: `${paths.join('/')}/${sortToSortPath(sort, config.sortKeys)}/${pageNo > 1 ? pageNo : ''}`,
           }
         })
         cultivars = data

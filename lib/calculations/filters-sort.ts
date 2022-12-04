@@ -138,15 +138,13 @@ export const pathArrayToFilterArray = (pathArray: [string, string][], filterSche
       }
     } else {
       const valueStrings = match && match.length === 2 ? match[1].split('+') : []
-      const values = match
-        ? filter.values.map((value) => {
-            const active = valueStrings.includes(value.value)
-            return {
-              ...value,
-              active,
-            }
-          })
-        : filter.values
+      const values = filter.values.map((value) => {
+        const active = valueStrings.includes(value.value)
+        return {
+          ...value,
+          active,
+        }
+      })
 
       return {
         ...filter,
@@ -261,4 +259,10 @@ export const filterArrayToPrismaWhere = (filterArray: IFilter[]): Prisma.cultiva
     }
   }
   return ret
+}
+
+export const sortToSortPath = (sortValue: TSort, sortKeys: ISortKeyValue[]): string => {
+  const thisSortKey = sortKeys?.find((sortKey) => sortKey.objectKey === sortValue.by)
+  if (!thisSortKey) return ''
+  return `sort:${thisSortKey.urlKey}:${sortValue.dir}`
 }
