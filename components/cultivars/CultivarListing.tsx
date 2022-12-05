@@ -77,7 +77,7 @@ const CultivarListing = (props: Props): JSX.Element => {
                   value={JSON.stringify(selectedSortKey)}
                   onChange={(e) => setSelectedSortKey(JSON.parse(e.target.value))}
                 >
-                  {sortKeys.flatMap((sortKey) =>
+                  {sortKeys.map((sortKey) =>
                     sortKey.dirs.map((dir) => {
                       const thisSort = { by: sortKey.objectKey, dir: dir.key }
 

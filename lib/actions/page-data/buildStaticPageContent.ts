@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
 
-export const getStaticPageContent = (paths: string[]): IListingPageData['pageContent'] => {
+export const buildStaticPageContent = (paths: string[]): IListingPageData['pageContent'] => {
   //@TODO: make getting the page data into a standalone function
   const pageContent: IListingPageData['pageContent'] = {
     title: 'List of Chilli Pepper Culitvars',
