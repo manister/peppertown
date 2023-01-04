@@ -1,3 +1,5 @@
+import path from 'path'
+
 export enum EnumAllowedSorts {
   asc = 'asc',
   desc = 'desc',
@@ -46,12 +48,13 @@ export const getSortFromPaths = (paths: string[], sortKeys: ISortKeyValue[]): TS
 }
 
 export const determineRequestType = (paths: string[]): 'listing' | 'cultivar' => {
-  const handle = paths[paths.length - 1]
-  if (!handle || paths.length > 2) {
+  if (paths.length < 1) throw Error('paths cannot be empty')
+  const lastPart = paths[paths.length - 1] as string //as last item must exist if above error not thrown
+  if (paths.length > 2 || (paths.length === 1 && paths[0] === 'cultivars')) {
     return 'listing'
   }
-  const isPageNo = !isNaN(handle ? parseInt(handle) : NaN) // check is handle is a number
-  const isSort = handle.includes('sort:') // check if handle is a sort
+  const isPageNo = !isNaN(lastPart ? parseInt(lastPart) : NaN) // check is handle is a number
+  const isSort = lastPart.includes('sort:') // check if handle is a sort
   if (paths[0] === 'cultivars' && !isSort && !isPageNo) {
     //this is a handle page
     return 'cultivar'

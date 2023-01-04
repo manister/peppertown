@@ -1,7 +1,7 @@
+import Link from 'next/link'
 import SchemaMarkup from '~/components/global/SchemaMarkup'
 import Container from '~/components/layout/Container'
 import { schemaMarkupBreadcrumbsFromLinks } from '~/lib/calculations/schemaMarkup'
-import LinkTo from './LinkTo'
 
 interface Props {
   links: { link: string; title: string }[]
@@ -17,9 +17,9 @@ const Breadcrumbs = (props: Props): JSX.Element => {
         <ol className="inline-flex items-center py-2 my-4">
           {links.map((link, index) => (
             <li key={link.link} className="inline-flex items-center">
-              <LinkTo href={link.link} className="p-2 text-lg inline-flex items-center text-gray-700 hover:text-gray-900 hover:underline">
+              <Link href={link.link} className="p-2 text-lg inline-flex items-center text-gray-700 hover:text-gray-900 hover:underline">
                 {link.title}
-              </LinkTo>
+              </Link>
               {index < links.length - 1 ? <span>&raquo;</span> : ''}
             </li>
           ))}

@@ -1,6 +1,6 @@
-import Image from 'next/image'
+import Image from 'next/legacy/image'
 import Container from '~/components/layout/Container'
-// import LinkTo from './LinkTo'
+// import Link from './Link'
 
 interface Props {
   className?: string

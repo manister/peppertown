@@ -1,4 +1,4 @@
-import LinkTo from '~/components/global/LinkTo'
+import Link from 'next/link'
 
 interface Props {
   className?: string
@@ -14,9 +14,9 @@ const HighlightText = (props: Props): JSX.Element => {
     return <span className={classNameString}>{children}</span>
   } else {
     return (
-      <LinkTo href={href} className={`${linkClasses} ${classNameString}`}>
-        {children}
-      </LinkTo>
+      <Link href={href} className={`${linkClasses} ${classNameString}`}>
+        <>{children}</>
+      </Link>
     )
   }
 }

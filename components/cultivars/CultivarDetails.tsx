@@ -30,7 +30,7 @@ const CultivarDetails = (props: ICultivar): JSX.Element => {
       <div className="text-slate-600">
         <CultivarDetailSection label="Heat:" emoji="🔥">
           <span className="font-bold">
-            {scovilleMin} - {scovilleMax} SHU
+            {scovilleMin.toLocaleString()} - {scovilleMax.toLocaleString()} SHU
           </span>
         </CultivarDetailSection>
 

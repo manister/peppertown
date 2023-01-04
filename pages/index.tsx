@@ -6,11 +6,11 @@ import Layout from '~/components/layout/Layout'
 import Head from 'next/head'
 
 import { shuffle } from '~/lib/calculations/helpers'
-import LinkTo from '~/components/global/LinkTo'
 import Button from '~/components/global/Button'
 import Container from '~/components/layout/Container'
 import Banner from '~/components/global/Banner'
 import { getAllCultivars } from '~/lib/actions/db-actions'
+import Link from 'next/link'
 
 interface Props {
   cultivars: ICultivar[]
@@ -36,9 +36,9 @@ const HomePage: React.FunctionComponent<Props> = (props) => (
       <p>
         Pepper town is the place to explore chilli peppers from all over the world. Explore all{' '}
         <em>
-          <LinkTo className="text-white" href="/cultivars">
+          <Link className="text-white" href="/cultivars">
             cultivars
-          </LinkTo>{' '}
+          </Link>{' '}
           (cultivated varieties)
         </em>
         , or explore by country or region.
@@ -51,7 +51,7 @@ const HomePage: React.FunctionComponent<Props> = (props) => (
         <section className="prose mx-auto px-2"></section>
         <div className="text-center py-2">
           <Button variant="primary">
-            <LinkTo href="/cultivars">View All</LinkTo>
+            <Link href="/cultivars">View All</Link>
           </Button>
         </div>
       </Container>

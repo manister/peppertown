@@ -8,7 +8,6 @@ import React from 'react'
 import CultivarListing from '~/components/cultivars/CultivarListing'
 import FullCultivarProfile from '~/components/cultivars/FullCultivarProfile'
 import Layout from '~/components/layout/Layout'
-import LinkTo from '~/components/global/LinkTo'
 
 import ReactMarkdown from 'react-markdown'
 import Breadcrumbs from '~/components/global/Breadcrumbs'
@@ -18,6 +17,7 @@ import { determineRequestType } from '~/lib/calculations/paths'
 import { buildListingPageData } from '~/lib/actions/page-data/buildListingPageData'
 import { buildStaticPageContent } from '~/lib/actions/page-data/buildStaticPageContent'
 import { buildCultivarPageData } from '~/lib/actions/page-data/buildCultivarPageData'
+import Link from 'next/link'
 
 type TListingPageProps = {
   listingPageData: IListingPageData
@@ -51,7 +51,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
 }
 
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
-  //@TODO split up more
   const { paths } = params as IParams
   if (!paths) {
     return {
@@ -130,7 +129,11 @@ const Page = (props: Props): JSX.Element => {
               components={{
                 a: (node) => {
                   if (node.href) {
-                    return <LinkTo href={node.href}>{node.children}</LinkTo>
+                    return (
+                      <Link href={node.href}>
+                        <>{node.children}</>
+                      </Link>
+                    )
                   }
                   return <>{node.children}</>
                 },
