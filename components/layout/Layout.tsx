@@ -1,5 +1,5 @@
+import Link from 'next/link'
 import CookieConsent from 'react-cookie-consent'
-import LinkTo from '~/components/global/LinkTo'
 import Footer from '~/components/page/Footer'
 import Nav from '~/components/page/Nav'
 import ClientOnly from '~/components/utility/ClientOnly'
@@ -21,9 +21,9 @@ const Layout = ({ children, showCookieConsent }: Props): JSX.Element => {
         {showCookieConsent && (
           <CookieConsent overlay buttonText="Accept all and close">
             This website uses cookies to enhance the user experience. For full options and more information please read our{' '}
-            <LinkTo className="underline" href={'/policies/cookies'}>
+            <Link className="underline" href={'/policies/cookies'}>
               Cookie Policy
-            </LinkTo>{' '}
+            </Link>{' '}
           </CookieConsent>
         )}
       </ClientOnly>

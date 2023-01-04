@@ -9,9 +9,9 @@ import { schemaMarkupFromListOfCultivars } from '~/lib/calculations/schemaMarkup
 import HighlightText from '~/components/global/HighlightText'
 import SchemaMarkup from '~/components/global/SchemaMarkup'
 
-import LinkTo from '~/components/global/LinkTo'
 import { filterArrayToPathArray, sortToSortPath } from '~/lib/calculations/filters-sort'
 import Select from '~/components/global/Select'
+import Link from 'next/link'
 
 interface Props {
   cultivars: ICultivar[]
@@ -77,7 +77,7 @@ const CultivarListing = (props: Props): JSX.Element => {
                   value={JSON.stringify(selectedSortKey)}
                   onChange={(e) => setSelectedSortKey(JSON.parse(e.target.value))}
                 >
-                  {sortKeys.flatMap((sortKey) =>
+                  {sortKeys.map((sortKey) =>
                     sortKey.dirs.map((dir) => {
                       const thisSort = { by: sortKey.objectKey, dir: dir.key }
 
@@ -126,7 +126,13 @@ const CultivarListing = (props: Props): JSX.Element => {
           ? pagination.map(({ pageNo, url }) => {
               return (
                 <li className="mx-1" key={pageNo}>
-                  {pageNo === page ? <span className="underline">{pageNo}</span> : <LinkTo href={url}>{pageNo}</LinkTo>}
+                  {pageNo === page ? (
+                    <span className="underline">{pageNo}</span>
+                  ) : (
+                    <Link href={url}>
+                      <>{pageNo}</>
+                    </Link>
+                  )}
                 </li>
               )
             })

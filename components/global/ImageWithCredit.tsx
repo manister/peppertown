@@ -1,8 +1,8 @@
-import Image from 'next/image'
+import Image from 'next/legacy/image'
 import parse from 'html-react-parser'
-import LinkTo from './LinkTo'
 import { useState } from 'react'
 import ClientOnly from '~/components/utility/ClientOnly'
+import Link from 'next/link'
 
 interface Props {
   src: string
@@ -25,9 +25,9 @@ const ImageWithCredit = (props: Props): JSX.Element => {
   return (
     <div className="relative">
       {href ? (
-        <LinkTo className="block text-[0px]" tabIndex={-1} href={href}>
+        <Link className="block text-[0px]" tabIndex={-1} href={href}>
           <ImageComponent />
-        </LinkTo>
+        </Link>
       ) : (
         <ImageComponent />
       )}

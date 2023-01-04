@@ -8,16 +8,28 @@ import React from 'react'
 import CultivarListing from '~/components/cultivars/CultivarListing'
 import FullCultivarProfile from '~/components/cultivars/FullCultivarProfile'
 import Layout from '~/components/layout/Layout'
-import LinkTo from '~/components/global/LinkTo'
-
-import { getCultivarPageDataFromPaths } from '~/lib/actions/pageData/[...paths]'
 
 import ReactMarkdown from 'react-markdown'
 import Breadcrumbs from '~/components/global/Breadcrumbs'
 import Banner from '~/components/global/Banner'
 import { getAllCultivars, getAllOrigins, getAllSpecies } from '~/lib/actions/db-actions'
+import { determineRequestType } from '~/lib/calculations/paths'
+import { buildListingPageData } from '~/lib/actions/page-data/buildListingPageData'
+import { buildStaticPageContent } from '~/lib/actions/page-data/buildStaticPageContent'
+import { buildCultivarPageData } from '~/lib/actions/page-data/buildCultivarPageData'
+import Link from 'next/link'
 
-type Props = ICultivarPageData
+type TListingPageProps = {
+  listingPageData: IListingPageData
+  requestType: 'listing'
+}
+
+type TCultivarPageProps = {
+  cultivarPageData: ICultivarPageData
+  requestType: 'cultivar'
+}
+
+type Props = TListingPageProps | TCultivarPageProps | Record<string, never>
 
 interface IParams extends ParsedUrlQuery {
   paths: string[] | undefined
@@ -40,28 +52,70 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   const { paths } = params as IParams
-  const props = await getCultivarPageDataFromPaths(paths ?? [])
+  if (!paths) {
+    return {
+      notFound: true,
+      props: {},
+    }
+  }
 
+  const requestType = determineRequestType(paths)
+
+  if (requestType === 'cultivar') {
+    const cultivarPageData: ICultivarPageData = await buildCultivarPageData(paths)
+    return {
+      props: {
+        cultivarPageData,
+        requestType,
+      },
+      notFound: !cultivarPageData.cultivar,
+      revalidate: false,
+    }
+  }
+  if (requestType === 'listing') {
+    const listingPageData = await buildListingPageData(paths)
+    const pageContent = buildStaticPageContent(paths)
+    return {
+      props: {
+        listingPageData: {
+          ...listingPageData,
+          pageContent,
+        },
+        requestType,
+      },
+      notFound: !listingPageData.cultivars || listingPageData.cultivars.length < 1,
+      revalidate: false,
+    }
+  }
   return {
-    props,
-    notFound: !props.cultivars || props.cultivars.length < 1,
-    revalidate: false,
+    notFound: true,
+    props: {},
   }
 }
 
-const CultivarPage = ({
-  cultivars,
-  requestType,
-  count,
-  page,
-  sort,
-  filters,
-  pageContent,
-  relatedCultivars,
-  pagination,
-  sortKeys,
-}: Props): JSX.Element => {
-  if (requestType === 'listing') {
+const Page = (props: Props): JSX.Element => {
+  if (props.requestType === 'cultivar') {
+    const { cultivar, relatedCultivars } = props.cultivarPageData
+    return (
+      <Layout>
+        <Head>
+          <title>{cultivar.name}</title>
+          <meta name="description" content={`All about ${cultivar.name}, a cultivar of Capsicum ${cultivar.species?.name}`} />
+        </Head>
+        <Breadcrumbs
+          links={[
+            { title: 'Home', link: '/' },
+            { title: 'Cultivars', link: '/cultivars' },
+            { title: cultivar.name, link: `/cultivars/${cultivar.handle}` },
+          ]}
+        />
+        <FullCultivarProfile cultivar={cultivar} relatedCultivars={relatedCultivars} />
+      </Layout>
+    )
+  }
+
+  if (props.requestType === 'listing') {
+    const { cultivars, pageContent, filters, count, page, sort, sortKeys, pagination } = props.listingPageData
     return (
       <Layout>
         <Head>
@@ -75,7 +129,11 @@ const CultivarPage = ({
               components={{
                 a: (node) => {
                   if (node.href) {
-                    return <LinkTo href={node.href}>{node.children}</LinkTo>
+                    return (
+                      <Link href={node.href}>
+                        <>{node.children}</>
+                      </Link>
+                    )
                   }
                   return <>{node.children}</>
                 },
@@ -106,28 +164,8 @@ const CultivarPage = ({
         />
       </Layout>
     )
-  } else if (requestType === 'handle' && cultivars.length > 0) {
-    const cultivar = cultivars[0]
-    if (!cultivar) return <></>
-    return (
-      <Layout>
-        <Head>
-          <title>{cultivar.name}</title>
-          <meta name="description" content={`All about ${cultivar.name}, a cultivar of Capsicum ${cultivar.species?.name}`} />
-        </Head>
-        <Breadcrumbs
-          links={[
-            { title: 'Home', link: '/' },
-            { title: 'Cultivars', link: '/cultivars' },
-            { title: cultivar.name, link: `/cultivars/${cultivar.handle}` },
-          ]}
-        />
-        <FullCultivarProfile cultivar={cultivar} relatedCultivars={relatedCultivars} />
-      </Layout>
-    )
   }
-
   return <></>
 }
 
-export default CultivarPage
+export default Page

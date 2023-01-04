@@ -1,5 +1,5 @@
+import Link from 'next/link'
 import Emoji from '~/components/global/Emoji'
-import LinkTo from '~/components/global/LinkTo'
 
 import Container from '~/components/layout/Container'
 
@@ -52,11 +52,11 @@ const Footer = (props: Props): JSX.Element => {
         <ul className="flex items-center">
           {navLinks.map((link) => (
             <li className="px-2" key={link.id}>
-              <LinkTo className="whitespace-nowrap text-xs hover:underline" href={link.href}>
+              <Link className="whitespace-nowrap text-xs hover:underline" href={link.href}>
                 <>
                   <Emoji src={link.emoji} /> {link.text}
                 </>
-              </LinkTo>
+              </Link>
             </li>
           ))}
         </ul>
