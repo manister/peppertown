@@ -14,6 +14,7 @@ const TwemojiComp = (props: Props): JSX.Element => {
         twemoji.parse(src, {
           folder: 'svg',
           ext: '.svg',
+          base: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.1/',
         })
       )}
     </span>
